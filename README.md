@@ -14,7 +14,7 @@ ToDo:
 - Plugin for Dummies
 
 ## Report
-[Overleaf Report][https://www.overleaf.com/6311138225cynhjxyhsfrw] based on guidelines given in the kick-off meeting 
+[Overleaf Report](https://www.overleaf.com/6311138225cynhjxyhsfrw) based on guidelines given in the kick-off meeting 
 
 
 
