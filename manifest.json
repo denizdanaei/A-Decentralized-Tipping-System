@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Decentralized Tipping",
+  "version": "1.0",
+
+  "description": "Tipping plugin based on the XRP ledger",
+
+  "icons": {
+    "48": "icons/xrpLogo.jpg"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://localhost/*"],
+      "js": ["tipping.js"]
+    }
+  ]
+}
