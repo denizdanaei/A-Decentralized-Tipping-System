@@ -7,12 +7,6 @@ Blockchain Engineering projects - class of 2020
 - [Useful links][3]
 - [Questions][4]
 
-## ToDo list week 1:
-ToDo:
-- Basic Info about XRP Ledger and Ripple, Ripple API
-- Read xrpl.org, official  Docs, How does the transaction works
-- Plugin for Dummies
-
 ## Report
 [Overleaf Report](https://www.overleaf.com/6311138225cynhjxyhsfrw) based on guidelines given in the kick-off meeting 
 
