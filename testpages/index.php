@@ -9,8 +9,8 @@
 <body>
 Welcome to our first test page!
 <br></br>
-The adress of the artist is:
-<div id="adress" >
+The address of the artist is:
+<div id="address" >
 rn5S4dtpB87JU8UpSZDbAT2HtGjMvHPD8D
 </div>
 <div id = "popupContainer"></div>
