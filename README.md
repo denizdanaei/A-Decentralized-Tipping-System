@@ -1,19 +1,17 @@
 # A Decentralized Tipping System
-Blockchain Engineering projects - class of 2020 
 
-## Google Docs: 
+Blockchain Engineering projects - class of 2020
+
+## Google Docs
+
 - [moscow][1]
 - [Timeline][2]
 - [Useful links][3]
 - [Questions][4]
 
 ## Report
+
 [Overleaf Report](https://www.overleaf.com/6311138225cynhjxyhsfrw) based on guidelines given in the kick-off meeting 
-
-
-
-
-
 
 [1]: https://docs.google.com/document/d/1jz3daNa12Ojk0Ogy33iWjOiPGHjUcu8mtmqWH8Ofn_o/edit
 
