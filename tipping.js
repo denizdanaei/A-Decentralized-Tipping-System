@@ -1,7 +1,8 @@
-function donateMoney() {
-  alert("Thank you for your donation!")
-}
 
+function donateMoney() {
+  var address = document.getElementById("address").innerHTML;
+  alert("Thank you for your donation!" + "\n \nThe tip will be send to: " + address)
+}
 document.getElementById("popupContainer").innerHTML = `<div class="popup" style="position: absolute;  top: 80px;
 right: 80px; width:20%;">
 <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue;">
@@ -11,7 +12,5 @@ right: 80px; width:20%;">
   </span>
   </div>
 </div>`;
+
 document.getElementById("donateButton").addEventListener("click", donateMoney);
-
-
-

@@ -9,6 +9,8 @@
     "48": "icons/xrpLogo.jpg"
   },
 
+  // "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.js; object-src 'self'",
+
   "content_scripts": [
     {
       "matches": ["http://localhost/*"],
