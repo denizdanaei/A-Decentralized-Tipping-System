@@ -8,6 +8,9 @@
   "icons": {
     "48": "icons/xrpLogo.jpg"
   },
+  "background": {
+    "page": "my_ripple_experiment/background.html"
+  },
 
   "content_scripts": [
     {
