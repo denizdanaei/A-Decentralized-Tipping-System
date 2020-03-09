@@ -6,16 +6,22 @@
   "description": "Tipping plugin based on the XRP ledger",
 
   "icons": {
-    "48": "icons/xrpLogo.jpg"
+    "48": "icons/tip_me_48",
+    "96": "icons/tip_me_96",
+    "128":"icons/tip_me_128"
   },
+  
   "background": {
     "page": "my_ripple_experiment/background.html"
   },
 
-  "content_scripts": [
-    {
-      "matches": ["*://*.mozilla.org/*"],
-      "js": ["tipping.js"]
-    }
+  "browser_action": {
+    "default_icon": "icons/tip_me_96.png",
+    "default_title": "TipMe",
+    "default_popup": "popup/widget.html"
+  },
+
+  "web_accessible_resources": [
+    "icons/tip_me_128.png"
   ]
 }
