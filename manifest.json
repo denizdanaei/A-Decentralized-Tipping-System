@@ -14,7 +14,7 @@
 
   "content_scripts": [
     {
-      "matches": ["http://localhost/*"],
+      "matches": ["*://*.mozilla.org/*"],
       "js": ["tipping.js"]
     }
   ]
