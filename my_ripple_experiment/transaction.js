@@ -1,47 +1,48 @@
 
-function doTransaction() {
-api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
-var maxLedgerVersion = null
-var txID = null
+function doTransaction(publicAddress) {
+    console.log(publicAddress)
+    api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
+    var maxLedgerVersion = null
+    var txID = null
 
-//this is pretty much the main function for the transaction. 
-//the first step is to connect to the API server
-api.connect().then(() => {
-    console.log('Connected to the API server' + '\n');
+    //this is pretty much the main function for the transaction. 
+    //the first step is to connect to the API server
+    api.connect().then(() => {
+        console.log('Connected to the API server' + '\n');
+        
+        //The second step is to create the JSON file used for the transaction
+        doPrepare().then(txJSON => {  
+        
+        //The third step is to sign the JSON file with the secret key
+        const response = api.sign(txJSON, "ss7ktBumXYJAF9PhkHmwhEUCD7Ldc")
+        txID = response.id
+        console.log("Identifying hash:", txID)
+        const txBlob = response.signedTransaction
+        console.log("Signed blob:", txBlob + '\n')
+        
+        //The fourth step is to take the signed Blob and submit it too the ledger
+        doSubmit(txBlob).then(earliestLedgerVersion => {
+        
+        //The transaction has been submitted. this method checks on each ledger update if the transaction.
+        //has been accepted. if it has the success is logged and the process is ended    
+        api.on('ledger', ledger => {
+            console.log("Ledger version", ledger.ledgerVersion, "was just validated." + '\n')
+            logTransaction(earliestLedgerVersion)
+        
+            if (ledger.ledgerVersion > maxLedgerVersion) {
+                //after a certain amount of ledger updates with still no transaction information available
+                //is considered to be expired. this is logged and the process is ended.
+                console.log("If the transaction hasn't succeeded by now, it's expired")
+                end()
     
-    //The second step is to create the JSON file used for the transaction
-    doPrepare().then(txJSON => {  
-    
-    //The third step is to sign the JSON file with the secret key
-    const response = api.sign(txJSON, "ss7ktBumXYJAF9PhkHmwhEUCD7Ldc")
-    txID = response.id
-    console.log("Identifying hash:", txID)
-    const txBlob = response.signedTransaction
-    console.log("Signed blob:", txBlob + '\n')
-     
-    //The fourth step is to take the signed Blob and submit it too the ledger
-    doSubmit(txBlob).then(earliestLedgerVersion => {
-    
-    //The transaction has been submitted. this method checks on each ledger update if the transaction.
-    //has been accepted. if it has the success is logged and the process is ended    
-    api.on('ledger', ledger => {
-        console.log("Ledger version", ledger.ledgerVersion, "was just validated." + '\n')
-        logTransaction(earliestLedgerVersion)
-       
-        if (ledger.ledgerVersion > maxLedgerVersion) {
-            //after a certain amount of ledger updates with still no transaction information available
-            //is considered to be expired. this is logged and the process is ended.
-            console.log("If the transaction hasn't succeeded by now, it's expired")
-            end()
- 
-        }
-    })
-    
-    }).catch(console.error)
+            }
+        })
+        
+        }).catch(console.error)
+
+        }).catch(console.error);
 
     }).catch(console.error);
-
-  }).catch(console.error);
 }
    
 //function used to disconnect from the server and end the process
