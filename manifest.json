@@ -5,6 +5,10 @@
 
   "description": "Tipping plugin based on the XRP ledger",
 
+  "permissions": [
+    "activeTab"
+  ],
+
   "icons": {
     "48": "icons/tip_me_48",
     "96": "icons/tip_me_96",
