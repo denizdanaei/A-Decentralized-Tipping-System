@@ -1,5 +1,4 @@
-// ripple = require('ripple-lib')
-require(['ripple-lib'], function (foo) {
+
 api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
 var maxLedgerVersion = null
 var txID = null
@@ -42,7 +41,7 @@ api.connect().then(() => {
     }).catch(console.error);
 
   }).catch(console.error);
-});
+  
    
 //function used to disconnect from the server and end the process
 function end() {
