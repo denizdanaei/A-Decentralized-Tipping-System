@@ -8,14 +8,13 @@
   "icons": {
     "48": "icons/xrpLogo.jpg"
   },
-  "background": {
-    "page": "my_ripple_experiment/background.html"
-  },
   "content_security_policy": "script-src 'self' https://requirejs.org/docs/release/2.3.6/minified/require.js; object-src 'self'",
+  
+  
   "content_scripts": [
     {
       "matches": ["http://localhost/*"],
-      "js": ["tipping.js"]
+      "js": ["my_ripple_experiment/ripple-latest-min.js","tipping.js"]
     }
   ]
 }
