@@ -1,5 +1,35 @@
-function myFunction() {
-  document.getElementById("accounInfo").innerHTML = "Hello World";
+
+
+function printXrpConnection() {
+  var api = new ripple.RippleAPI({server:'wss://s1.ripple.com/'});
+  api.connect().then(function() {
+      return api.getServerInfo();
+  }).then(function(server_info) {
+  document.body.innerHTML += "<p>Connected to rippled server!</p>" +
+"      <table>" +
+"        <tr><th>Version</th>" +
+"          <td>" + server_info.buildVersion + "</td></tr>" +
+"        <tr><th>Ledgers available</th>" +
+"          <td>" + server_info.completeLedgers + "</td></tr>" +
+"        <tr><th>hostID</th>" +
+"          <td>" + server_info.hostID + "</td></tr>" +
+"        <tr><th>Most Recent Validated Ledger Seq.</th>" +
+"          <td>" + server_info.validatedLedger.ledgerVersion + "</td></tr>" +
+"        <tr><th>Most Recent Validated Ledger Hash</th>" +
+"          <td>" + server_info.validatedLedger.hash + "</td></tr>" +
+"        <tr><th>Seconds since last ledger validated</th>" +
+"          <td>" + server_info.validatedLedger.age + "</td></tr>" +
+"      </table>";
+  });
 }
 
-document.getElementById("balance").addEventListener("click", myFunction);
+
+
+
+function getAccountInfo() {
+  document.getElementById("accounInfo").innerHTML = browser.tabs.executeScript({file: "my_ripple_experiment\get-account-info.js"})
+  .then(listenForClicks)
+  .catch(reportExecuteScriptError);;
+}
+
+document.getElementById("balance").addEventListener("click", printXrpConnection);
