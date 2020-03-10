@@ -58,7 +58,7 @@ console.error(`Could not beastify: ${error}`);
 * Get the active tab,
 * then call "beastify()" or "reset()" as appropriate.
 */
-if (e.target.classList.contains("beast")) {
+if (e.target.classList.contains("donate")) {
 browser.tabs.query({active: true, currentWindow: true})
 .then(beastify)
 .catch(reportError);
@@ -86,6 +86,6 @@ console.error(`Failed to execute beastify content script: ${error.message}`);
 * and add a click handler.
 * If we couldn't inject the script, handle the error.
 */
-browser.tabs.executeScript({file: "/content_scripts/beastify.js"})
+browser.tabs.executeScript({file: "/content_scripts/test_script.js"})
 .then(listenForClicks)
 .catch(reportExecuteScriptError);
