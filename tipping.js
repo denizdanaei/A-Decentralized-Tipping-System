@@ -3,6 +3,7 @@ function donateMoney() {
   // var address = document.getElementById("address").innerHTML;
   alert("Thank you for your donation!" + "\n \nThe tip will be send to: " + getPublicAddress())
   printXrpConnection()
+  doTransaction(getPublicAddress())
 }
 
 function printXrpConnection() {
