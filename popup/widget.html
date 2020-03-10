@@ -7,23 +7,28 @@
   </head>
 
 <body>
-  <div class = "content">
-    <div> <button type = "button" onclick = "document.write(5 + 6)"> My Balance </button> </div>
-    <div>
+  <div class = "container">
+
+    <div class = "balance">
+      <button type = "button" name = "balance" onclick = "document.write(5 + 6)"> My Balance </button> 
+    </div>
+    
+    <div class = "tip">
       <label> Amount </label>
       <input type = "number" name = "amount" placeholder = "0"></input>
-      <button> Donate </button>
+      <button type = "button" name = "tip"> Tip </button>
     </div>
-  </div>
+  
 
-  <!--div id="popup-content">
-    <div class="button donate">Donate</div>
-    <div class="button reset">Reset</div>
-  </div-->
-  <div id = "error-content" class = "hidden">
-    <p>Can't tip to this web page.</p><p>Try a different page.</p>
+    <!--div id="popup-content">
+      <div class="button donate">Donate</div>
+      <div class="button reset">Reset</div>
+    </div-->
+    <div id = "error-content" class = "hidden">
+      <p>Can't tip to this web page.</p><p>Try a different page.</p>
+    </div>
+    <script src = "widget.js"></script>
   </div>
-  <script src = "widget.js"></script>
 </body>
 
 </html>

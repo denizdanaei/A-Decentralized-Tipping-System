@@ -1,16 +1,19 @@
 html, body {
-    width: 400px;
-    height: 300px;
+    height: 100%;
+    background-color: whitesmoke;
     margin: auto;
   }
   
-  .content{
-
-    background-color: #fff9e6;
+  .container {
+    padding: 20px 20px;
+    margin: auto;
     font: normal 14px Roboto, arial, sans-serif;
     line-height: 2em;
   }
+  .balance {
+    padding-bottom: 20px;
 
+  }
   .hidden {
     display: none;
   }
@@ -22,3 +25,8 @@ html, body {
     font-size: 1.5em;
     cursor: pointer;
   }
+
+  .button:hover {
+    color: red;
+  }
+  
