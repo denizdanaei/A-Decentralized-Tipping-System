@@ -25,18 +25,7 @@ function doTransaction(publicAddress) {
         
         //The transaction has been submitted. this method checks on each ledger update if the transaction.
         //has been accepted. if it has the success is logged and the process is ended    
-        api.on('ledger', ledger => {
-            console.log("Ledger version", ledger.ledgerVersion, "was just validated." + '\n')
-            logTransaction(earliestLedgerVersion)
-        
-            if (ledger.ledgerVersion > maxLedgerVersion) {
-                //after a certain amount of ledger updates with still no transaction information available
-                //is considered to be expired. this is logged and the process is ended.
-                console.log("If the transaction hasn't succeeded by now, it's expired")
-                end()
-    
-            }
-        })
+        validation(earliestLedgerVersion, maxLedgerVersion)
         
         }).catch(console.error)
 
@@ -48,8 +37,28 @@ function doTransaction(publicAddress) {
 function end() {
     api.disconnect().then(() => {
         console.log('API has disconnected');
-        return false;
     })
+}
+
+//new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
+//ledger version twice but that is not a big issue. It only stops calling itself if logtransaction returns true or 
+//after a certain number of ledgers has been validated.
+async function validation(earliestLedgerVersion, maxLedgerVersion) {
+    var x = false 
+    var ledgerVersion = null
+    api.getLedgerVersion().then(function(d){
+        ledgerVersion = parseInt(d)
+        console.log('Ledger = @ version ', ledgerVersion)
+    })
+    x = await logTransaction(earliestLedgerVersion)
+    if (ledgerVersion > maxLedgerVersion) {
+        console.log("If the transaction hasn't succeeded by now, it's expired")
+        end()
+        x = true 
+    }
+    if(x == false){
+        setTimeout(function(){ validation(earliestLedgerVersion,maxLedgerVersion); }, 2000);
+    }
 }
   
 //function used to check if the transaction has been succesfully put on the ledger. 
@@ -61,8 +70,10 @@ async function logTransaction(earliestLedgerVersion) {
         console.log("Transaction result:", tx.outcome.result)
         console.log("Balance changes:", JSON.stringify(tx.outcome.balanceChanges) + '\n')
         end()  
+        return true
       } catch(error) {
         console.log("Couldn't get transaction outcome:", error + '\n')
+        return false
     }
 }
 
