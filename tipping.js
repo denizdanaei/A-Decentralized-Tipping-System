@@ -43,7 +43,7 @@ function showCorrectDiv(){
 // Show div to upload files(public address and private key)
 function showUploadDiv() {
   document.getElementById("popupContainer").innerHTML = `
-  <div class="popup" style="position: absolute;  top: 80px; right: 80px; width:60%;">
+  <div class="popup" style="position: absolute;  top: 20px; right: 0px; width:60%;">
   <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue; padding:10px">
   <span class="popuptext" id="myPopup" style"text-align:center;"><b> Please upload two files(public address, private key) </b></span>
   <br>
@@ -67,9 +67,9 @@ function showUploadDiv() {
 
 // Show the div to tip the webpage
 function showTipDiv() {
-  document.getElementById("popupContainer").innerHTML = `<div class="popup" style="position: absolute;  top: 80px;
-  right: 80px; width:40%;">
-  <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue;">
+  document.getElementById("popupContainer").innerHTML = `<div class="popup" style="position: absolute;  top: 20px;
+  right: 0px; width:40%;">
+  <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue;  padding:10px">
   <span class="popuptext" id="myPopup" style"text-align:center;"><b>Do you want to tip?</b></span>
   <br>
   <button type = "button" id = "donateButton"> Tip here </button>  
