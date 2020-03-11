@@ -33,19 +33,8 @@ function doTransaction(receiverAddress, senderAddress, privateKey) {
         
         //The transaction has been submitted. this method checks on each ledger update if the transaction.
         //has been accepted. if it has the success is logged and the process is ended    
-        api.on('ledger', ledger => {
-            console.log("Ledger version", ledger.ledgerVersion, "was just validated." + '\n')
-            logTransaction(earliestLedgerVersion)
+        validation(earliestLedgerVersion, maxLedgerVersion)
         
-            if (ledger.ledgerVersion > maxLedgerVersion) {
-                //after a certain amount of ledger updates with still no transaction information available
-                //is considered to be expired. this is logged and the process is ended.
-                console.log("If the transaction hasn't succeeded by now, it's expired")
-                end()
-    
-            }
-        })
-
         }).catch(console.error)
 
         }).catch(console.error);
@@ -56,10 +45,30 @@ function doTransaction(receiverAddress, senderAddress, privateKey) {
     function end() {
         api.disconnect().then(() => {
             console.log('API has disconnected');
-            return false;
         })
     }
-    
+
+    //new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
+    //ledger version twice but that is not a big issue. It only stops calling itself if logtransaction returns true or 
+    //after a certain number of ledgers has been validated.
+    async function validation(earliestLedgerVersion, maxLedgerVersion) {
+        var x = false 
+        var ledgerVersion = null
+        api.getLedgerVersion().then(function(d){
+            ledgerVersion = parseInt(d)
+            console.log('Ledger = @ version ', ledgerVersion)
+        })
+        x = await logTransaction(earliestLedgerVersion)
+        if (ledgerVersion > maxLedgerVersion) {
+            console.log("If the transaction hasn't succeeded by now, it's expired")
+            end()
+            x = true 
+        }
+        if(x == false){
+            setTimeout(function(){ validation(earliestLedgerVersion,maxLedgerVersion); }, 2000);
+        }
+    }
+  
     //function used to check if the transaction has been succesfully put on the ledger. 
     //It can take a couple of ledger updates for this to happen so this function will throw errors.
     //and needs to be called multiple times. 
@@ -69,8 +78,10 @@ function doTransaction(receiverAddress, senderAddress, privateKey) {
             console.log("Transaction result:", tx.outcome.result)
             console.log("Balance changes:", JSON.stringify(tx.outcome.balanceChanges) + '\n')
             end()  
+            return true
         } catch(error) {
             console.log("Couldn't get transaction outcome:", error + '\n')
+            return false
         }
     }
 
@@ -81,7 +92,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey) {
         const preparedTx = await api.prepareTransaction({
         "TransactionType": "Payment",
         "Account": sender,
-        "Amount": api.xrpToDrops("0.01"), // Same as "Amount": "22000000"
+        "Amount": api.xrpToDrops("0.0001"), // Same as "Amount": "22000000"
         "Destination": receiverAddress
         }, {
         // Expire this transaction if it doesn't execute within ~5 minutes:
@@ -139,4 +150,3 @@ function printXrpConnection(userData) {
       "      </table>";
       });
   }
-
