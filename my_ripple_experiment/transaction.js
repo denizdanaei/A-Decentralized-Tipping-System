@@ -43,14 +43,12 @@ function doTransaction(publicAddress) {
         }).catch(console.error);
 
     }).catch(console.error);
-}
    
 //function used to disconnect from the server and end the process
 function end() {
     api.disconnect().then(() => {
         console.log('API has disconnected');
-        exit()
-        process.exit();
+        return false;
     })
 }
   
@@ -75,7 +73,7 @@ async function doPrepare() {
     const preparedTx = await api.prepareTransaction({
       "TransactionType": "Payment",
       "Account": sender,
-      "Amount": api.xrpToDrops("22"), // Same as "Amount": "22000000"
+      "Amount": api.xrpToDrops("0.0001"), // Same as "Amount": "22000000"
       "Destination": "rUCzEr6jrEyMpjhs4wSdQdz4g8Y382NxfM"
     }, {
       // Expire this transaction if it doesn't execute within ~5 minutes:
@@ -108,3 +106,4 @@ async function doSubmit(txBlob) {
     return latestLedgerVersion + 1
 }
 
+}
