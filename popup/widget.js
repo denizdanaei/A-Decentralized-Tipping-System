@@ -1,8 +1,12 @@
 
 function donateMoney() {  
+  
+
+  document.getElementById("donated").innerHTML = "tiped!"
+  
   // var address = document.getElementById("address").innerHTML;
-  alert("Thank you for your donation!" + "\n \nThe tip will be send to: " + getPublicAddress())
-  printXrpConnection()
+  document.getElementById("donated").innerHTML = "Thank you for your donation!" + "\n \nThe tip will be send to: " + getPublicAddress()
+  // printXrpConnection()
   // doTransaction(getPublicAddress())
 }
 function printXrpConnection() {
@@ -29,10 +33,27 @@ function printXrpConnection() {
   });
 }
 
-function getAccountInfo() {
-  document.getElementById("accounInfo").innerHTML = browser.tabs.executeScript({file: "my_ripple_experiment\get-account-info.js"})
-  .then(listenForClicks)
-  .catch(reportExecuteScriptError);;
+document.getElementById("balance").addEventListener("click", printXrpConnection);
+
+// Funtion to get a specifc meta value
+function getPublicAddress() {
+  console.log(document);
+  const metas = document.getElementsByTagName('meta');
+  for (let i = 0; i < metas.length; i++) {
+    if (metas[i].getAttribute('name') === 'Tudelft-tipping-extension') {
+      return metas[i].getAttribute('content');
+    }
+  }
+  return 'The public address of this webpage is not found';
 }
 
-document.getElementById("balance").addEventListener("click", printXrpConnection);
+document.getElementById("tip").addEventListener("click", donateMoney);
+
+/**
+ * When the popup loads, inject a content script into the active tab,
+ * and add a click handler.
+ * If we couldn't inject the script, handle the error.
+ */
+browser.tabs.executeScript({file: "/content_scripts/test_script.js"})
+.then(listenForClicks)
+.catch(reportExecuteScriptError);
