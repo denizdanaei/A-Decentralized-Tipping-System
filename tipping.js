@@ -11,8 +11,10 @@ function donateMoney() {
   alert("Thank you for your donation!" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
   var userData = {}
   userData =  getUserData()
+  var amountval = document.getElementById("amount").value;
+  console.log("amount" + amountval)
   printXrpConnection(userData)
-  doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'])
+  doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], amountval)
 }
 
 // Funtion to get a specifc meta value
@@ -72,6 +74,7 @@ function showTipDiv() {
   <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue;  padding:10px">
   <span class="popuptext" id="myPopup" style"text-align:center;"><b>Do you want to tip?</b></span>
   <br>
+  <input type = "number" name = "amount" id = "amount" placeholder = "0"></input>
   <button type = "button" id = "donateButton"> Tip here </button>  
   </span>
   </div>

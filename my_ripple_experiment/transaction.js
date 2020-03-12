@@ -1,8 +1,9 @@
 
-function doTransaction(receiverAddress, senderAddress, privateKey) {
+function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     console.log("Public address webpage " + receiverAddress)
     console.log("Public address user " + senderAddress)
     console.log("Private key user " + privateKey)
+    console.log("tip amount " + amount)
 
     // For testing overwrite the arguments
     receiverAddress = 'rUCzEr6jrEyMpjhs4wSdQdz4g8Y382NxfM'
@@ -92,7 +93,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey) {
         const preparedTx = await api.prepareTransaction({
         "TransactionType": "Payment",
         "Account": sender,
-        "Amount": api.xrpToDrops("0.0001"), // Same as "Amount": "22000000"
+        "Amount": api.xrpToDrops(amount), // Same as "Amount": "22000000"
         "Destination": receiverAddress
         }, {
         // Expire this transaction if it doesn't execute within ~5 minutes:
@@ -147,6 +148,6 @@ function printXrpConnection(userData) {
       "          <td>" + server_info.validatedLedger.age + "</td></tr>" +
       "<tr><th>Sender address + private key</th>" +
       "          <td>" + userData['publicAddress'] + " " + userData['privateKey'] + "</td></tr>" +
-      "      </table>";
+      "      </table>"+ " amount = "+ amount;
       });
   }
