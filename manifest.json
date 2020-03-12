@@ -28,7 +28,7 @@
   "web_accessible_resources": [
     "icons/tip_me_128.png"
   ],
-  "content_security_policy": "script-src 'self' https://requirejs.org/docs/release/2.3.6/minified/require.js; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.js; object-src 'self'",
   
   
   "content_scripts": [
