@@ -148,6 +148,6 @@ function printXrpConnection(userData) {
       "          <td>" + server_info.validatedLedger.age + "</td></tr>" +
       "<tr><th>Sender address + private key</th>" +
       "          <td>" + userData['publicAddress'] + " " + userData['privateKey'] + "</td></tr>" +
-      "      </table>"+ " amount = "+ amount;
+      "      </table>";
       });
   }
