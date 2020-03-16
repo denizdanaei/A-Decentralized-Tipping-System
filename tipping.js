@@ -8,13 +8,23 @@ function getUserData() {
 }
 
 function donateMoney() {  
-  alert("Thank you for your donation!" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
-  var userData = {}
-  userData =  getUserData()
   var amountval = document.getElementById("amount").value;
-  console.log("amount" + amountval)
-  printXrpConnection(userData)
-  doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], amountval)
+  console.log("amount " + amountval)
+  // First check if the amount of tip is a valid number(Integer, Float)
+  if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/))){
+    alert("Please insert a valid number")
+  } else {
+    var confirmation = confirm("Are you sure you want to tip " + amountval + " XRP ?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+    // Check if user really wants to tip x to the webpage
+    if (confirmation) {
+      var userData = {}
+      userData = getUserData()
+      printXrpConnection(userData)
+      document.getElementById("donateButton").disabled = true;
+      // Start transaction
+      doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], amountval)
+    }
+  }
 }
 
 // Funtion to get a specifc meta value
