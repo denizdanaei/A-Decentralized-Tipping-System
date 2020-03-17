@@ -54,43 +54,25 @@ function showCorrectDiv(){
 
 // Show div to upload files(public address and private key)
 function showUploadDiv() {
-  document.getElementById("popupContainer").innerHTML = `
-  <div class="popup" style="position: absolute;  top: 20px; right: 0px; width:60%;">
-  <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue; padding:10px">
-  <span class="popuptext" id="myPopup" style"text-align:center;"><b> Please upload two files(public address, private key) </b></span>
-  <br>
-  <br>
-  <label for="pAddress">Public address:</label>
-  <input type="file" id="publicAddress" name="publicAddress" accept=".txt">
-  <br>
-  <label for="pKey">Private address:</label>
-  <input type="file" id="privateKey" name="privateKey" accept=".txt">
-  <br>
-  <br>
-  <button type = "button" id = "uploadButton"> Upload </button>  
-  </span>
-  </div>
-  </div>`;
+  var getHtmlUpload = browser.runtime.getURL("html/upload.html");
+  $('#popupContainer').load(getHtmlUpload, function() {
+    // When loaded, load event handlers
+    document.getElementById('publicAddress').addEventListener('change', readAllFiles, false);
+    document.getElementById('privateKey').addEventListener('change', readAllFiles, false);
+    document.getElementById("uploadButton").addEventListener("click", showTipDiv);
+  });
 
-  document.getElementById('publicAddress').addEventListener('change', readAllFiles, false);
-  document.getElementById('privateKey').addEventListener('change', readAllFiles, false);
-  document.getElementById("uploadButton").addEventListener("click", showTipDiv);
 }
 
 // Show the div to tip the webpage
 function showTipDiv() {
-  document.getElementById("popupContainer").innerHTML = `<div class="popup" style="position: absolute;  top: 20px;
-  right: 0px; width:40%;">
-  <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue;  padding:10px">
-  <span class="popuptext" id="myPopup" style"text-align:center;"><b>Do you want to tip?</b></span>
-  <br>
-  <input type = "number" name = "amount" id = "amount" placeholder = "0"></input>
-  <button type = "button" id = "donateButton"> Tip here </button>  
-  </span>
-  </div>
-  </div>`;
-  document.getElementById('donateButton').addEventListener('click', donateMoney);
+  var getHtmlTip = browser.runtime.getURL("html/tip.html");
+  $('#popupContainer').load(getHtmlTip, function() {
+    // When loaded, load event handlers
+    document.getElementById('donateButton').addEventListener('click', donateMoney);
+  });
 }
+
 
 // Method to read the data of the txt file => in the future upload path
 function readAllFiles(evt) {

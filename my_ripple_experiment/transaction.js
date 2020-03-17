@@ -128,7 +128,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
         return latestLedgerVersion + 1
     }
 }
-
+ 
 function printXrpConnection(userData) {
     var api = new ripple.RippleAPI({server:'wss://s1.ripple.com/'});
     api.connect().then(function() {
