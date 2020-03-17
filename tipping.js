@@ -11,8 +11,8 @@ function donateMoney() {
   var amountval = document.getElementById("amount").value;
   console.log("amount " + amountval)
   // First check if the amount of tip is a valid number(Integer, Float)
-  if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/))){
-    alert("Please insert a valid number")
+  if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/)) || amountval == 0){
+    alert("Please insert a valid number.")
   } else {
     var confirmation = confirm("Are you sure you want to tip " + amountval + " XRP ?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
     // Check if user really wants to tip x to the webpage
