@@ -43,9 +43,17 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     }).catch(console.error);
    
     // function used to disconnect from the server and end the process
-    function end() {
+    function end(transactionResult) {
         api.disconnect().then(() => {
+            
+            let successTag = 'SUCCESS';
             console.log('API has disconnected');
+            if (transactionResult.includes(successTag))
+            {
+                alert("Transaction was successfull");   
+            }else {
+                alert("Transaction failed.\n error= "+transactionResult);
+            }
             document.getElementById('donateButton').addEventListener('click', donateMoney);
         })
     }
@@ -80,7 +88,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
             console.log("Transaction result:", tx.outcome.result)
             console.log("Balance changes:", JSON.stringify(tx.outcome.balanceChanges) + '\n')
             document.getElementById("donateButton").disabled = false;
-            end()  
+            end(tx.outcome.result)  
             return true
         } catch(error) {
             console.log("Couldn't get transaction outcome:", error + '\n')
