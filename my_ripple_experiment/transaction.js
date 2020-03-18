@@ -22,21 +22,21 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
         //The second step is to create the JSON file used for the transaction
         doPrepare().then(txJSON => {  
         
-        //The third step is to sign the JSON file with the secret key
-        const response = api.sign(txJSON, privateKey)
-        txID = response.id
-        console.log("Identifying hash:", txID)
-        const txBlob = response.signedTransaction
-        console.log("Signed blob:", txBlob + '\n')
-        
-        //The fourth step is to take the signed Blob and submit it too the ledger
-        doSubmit(txBlob).then(earliestLedgerVersion => {
-        
-        //The transaction has been submitted. this method checks on each ledger update if the transaction.
-        //has been accepted. if it has the success is logged and the process is ended    
-        validation(earliestLedgerVersion, maxLedgerVersion)
-        
-        }).catch(console.error)
+            //The third step is to sign the JSON file with the secret key
+            const response = api.sign(txJSON, privateKey)
+            txID = response.id
+            console.log("Identifying hash:", txID)
+            const txBlob = response.signedTransaction
+            console.log("Signed blob:", txBlob + '\n')
+            
+            //The fourth step is to take the signed Blob and submit it too the ledger
+            doSubmit(txBlob).then(earliestLedgerVersion => {
+            
+                //The transaction has been submitted. this method checks on each ledger update if the transaction.
+                //has been accepted. if it has the success is logged and the process is ended    
+                validation(earliestLedgerVersion, maxLedgerVersion)
+                
+            }).catch(console.error)
 
         }).catch(console.error);
 
