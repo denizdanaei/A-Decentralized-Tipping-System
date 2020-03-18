@@ -34,6 +34,7 @@
 - Added the amount info to lennart plugin, (user can decide how much to tip)
 
 **10 March** Group Confrence call, combinig plugin with XRP transaction
+
 **12 March** Meeting with Lennart, worked on the extension version, finally gave up and continued to work on lennart's version of plugin (build-in)
 
 ## Week 6
