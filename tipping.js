@@ -1,11 +1,5 @@
-showCorrectDiv()
 
-function getUserData() {
-    var userData = {}
-    userData.publicAddress = sessionStorage.getItem('publicAddress')
-    userData.privateKey = sessionStorage.getItem('privateKey')
-    return userData;
-}
+showCorrectDiv()
 
 function donateMoney() {  
   var amountval = document.getElementById("amount").value;
@@ -17,12 +11,10 @@ function donateMoney() {
     var confirmation = confirm("Are you sure you want to tip " + amountval + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
     // Check if user really wants to tip x to the webpage
     if (confirmation) {
-      var userData = {}
-      userData = getUserData()
-      printXrpConnection(userData)
+      printXrpConnection()
       document.getElementById("donateButton").disabled = true;
       // Start transaction
-      doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], amountval)
+      doTransaction(getPublicAddressWebpage(), amountval)
     }
   }
 }
@@ -39,11 +31,11 @@ function getPublicAddressWebpage() {
 }
 
 // Method to check wheter the user has uploaded their files
-function showCorrectDiv(){
-  userData = getUserData()
-  pKey = userData['privateKey']
-  pAddress = userData['publicAddress']
-  if(pAddress != null && pKey != null && pAddress != 'pAddress' && pKey != 'pKey') {
+async function showCorrectDiv(){
+  // Get credentials
+  senderAddress = await getCredentials('publicAddress.txt')
+  privateKey = await getCredentials('privateKey.txt')
+  if(senderAddress != null && privateKey != null) {
     // Tipping could be done
     showTipDiv()
   } else {
@@ -74,6 +66,7 @@ function showTipDiv() {
 }
 
 
+
 // Method to read the data of the txt file => in the future upload path
 function readAllFiles(evt) {
   var files = evt.target.files, i = 0, r, f;
@@ -82,12 +75,8 @@ function readAllFiles(evt) {
     r = new FileReader();
     r.onload = (function(f){
       return function(e){
-        console.log("Before " + sessionStorage.getItem('publicAddress'))
-        console.log("Before " + sessionStorage.getItem('privateKey'))
-        // Set the correct key, value
-        sessionStorage.setItem(String(evt.originalTarget.id), e.target.result);
-        console.log("After " + sessionStorage.getItem('publicAddress'))
-        console.log("After " + sessionStorage.getItem('privateKey'))
+        // Set the path of the file
+        insertDataStorage(String(evt.originalTarget.id), e.target.result)
         };
       })(f);
       r.readAsText(f);
@@ -95,4 +84,15 @@ function readAllFiles(evt) {
     else {
       alert("Error loading files");
     } 
+}
+async function insertDataStorage(filename, value) {
+  filename = filename + ".txt"
+  const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
+  var path = browser.runtime.getURL("/keys/" + filename);
+  const file = await tmpFiles.createMutableFile(path);
+  const fh = file.open("readwrite");   
+  await fh.append(value);
+  await fh.close();
+  await file.persist();
+ 
 }
