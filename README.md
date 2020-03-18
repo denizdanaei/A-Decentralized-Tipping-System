@@ -23,3 +23,8 @@ Blockchain Engineering projects - class of 2020
 [4]: https://docs.google.com/document/d/1qm0TtxVC-9xaH4tg3vJ_H-ajuW28KVC63_e0xSyCBRs/edit
 
 [5]: https://docs.google.com/forms/d/1mNVaPxbt0HUwIaTHxBxVHJtBCsVE1RosRijTxnIQQJM/edit
+
+
+## Noticed Issues
+
+- after *ValidationError: "xrpToDrops: value <value> has too many decimal places."* error, it seems it is stuck. button does not work. and it seems it is not disconnected automaticaly frim server
