@@ -18,14 +18,10 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     api.connect().then(() => {
         console.log('Connected to the API server' + '\n');
         
-        //fetch('https://www.bitstamp.net/api/v2/ticker/xrpeur/').then(response => {  
-        
-        //console.log(response.json())
-        //console.log(response.text())
-
         checkBalance(senderAddress, amount).then(array => {
             if (array[0] == true) {
                 amount = array[1]
+
                 //The second step is to create the JSON file used for the transaction
                 doPrepare().then(txJSON => {  
         
@@ -47,25 +43,27 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
 
                 }).catch(console.error);
             } else {
-                document.getElementById("donateButton").disabled = false;
                 document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
                                                                        "<br> You can try again if you want.";
-                //document.getElementById('donateButton').addEventListener('click', donateMoney);
                 end()
             }    
 
         }).catch(console.error);
 
         }).catch(console.error); 
-
-    //}).catch(console.error);
    
     // function used to disconnect from the server and end the process
     function end() {
         api.disconnect().then(() => {
             console.log('API has disconnected');
+            document.getElementById('donateButton').disabled = false;  
             document.getElementById('donateButton').addEventListener('click', donateMoney);
+            console.log('button should be reactivated.')
         })
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async function checkBalance(senderAddress, amount) {
@@ -86,6 +84,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
             console.log('amount trying to donate: ' + amount)
             console.log('amount trying to donate in xrp: ' + newAmount)
             console.log('account balance: ' + info.xrpBalance)
+            await sleep(2000)
             return [false, newAmount];
         }
     }
@@ -133,7 +132,6 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
             tx = await api.getTransaction(txID, {minLedgerVersion: earliestLedgerVersion})
             console.log("Transaction result:", tx.outcome.result)
             console.log("Balance changes:", JSON.stringify(tx.outcome.balanceChanges) + '\n')
-            document.getElementById("donateButton").disabled = false;
             end()  
             return true
         } catch(error) {
