@@ -13,7 +13,8 @@
   "permissions": [
     "webRequest",
     "webRequestBlocking",
-    "storage"
+    "storage",
+    "*://www.bitstamp.net/api/v2/ticker/*"
   ],
   "web_accessible_resources": ["html/*.html"],
   "content_scripts": [

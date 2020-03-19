@@ -6,8 +6,8 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
 
     // For testing overwrite the arguments
     receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
-    senderAddress = 'rnNoHDhUtUfM1ofkfrixt2Fioc5P7GELpM'
-    privateKey = 'snFhXTzrKMV9KvovUpJSgsSRmphhP'
+    senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
+    privateKey = 'shtpSCSbCFfvyAZLuo7aYutvkkKeu'
    
     api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
     var maxLedgerVersion = null
@@ -18,9 +18,14 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     api.connect().then(() => {
         console.log('Connected to the API server' + '\n');
         
-        checkBalance(senderAddress, amount).then(valid => {
+        //fetch('https://www.bitstamp.net/api/v2/ticker/xrpeur/').then(response => {  
         
-            if (valid == true) {
+        //console.log(response.json())
+        //console.log(response.text())
+
+        checkBalance(senderAddress, amount).then(array => {
+            if (array[0] == true) {
+                amount = array[1]
                 //The second step is to create the JSON file used for the transaction
                 doPrepare().then(txJSON => {  
         
@@ -51,7 +56,9 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
 
         }).catch(console.error);
 
-    }).catch(console.error);
+        }).catch(console.error); 
+
+    //}).catch(console.error);
    
     // function used to disconnect from the server and end the process
     function end() {
@@ -63,17 +70,38 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
 
     async function checkBalance(senderAddress, amount) {
         info = await api.getAccountInfo(senderAddress)
-        if (Number(info.xrpBalance) >= Number(amount)) {
+        
+        newAmount = await exchangeRate(amount)
+        newAmount = newAmount.toFixed(2)
+        console.log("The to be donated amount in XRP: " + newAmount)
+
+        if (Number(info.xrpBalance) >= Number(newAmount)) {
             console.log('The account has enough xrp, the transaction can continue.')
-            console.log('amount trying to donate: ' + amount)
+            console.log('amount trying to donate in euros: ' + amount)
+            console.log('amount trying to donate in xrp: ' + newAmount)
             console.log('account balance: ' + info.xrpBalance)
-            return true
+            return [true, newAmount];
         } else {
             console.log('The account has too little xrp, cancel the transaction.')
             console.log('amount trying to donate: ' + amount)
+            console.log('amount trying to donate in xrp: ' + newAmount)
             console.log('account balance: ' + info.xrpBalance)
-            return false
+            return [false, newAmount];
         }
+    }
+
+    async function exchangeRate(amount) {
+        response = await fetch('https://www.bitstamp.net/api/v2/ticker/xrpeur/')
+    
+        resjson = await response.json()   
+        console.log('The exchange rate from XRP to EUR: ' + Number(resjson.last))
+
+        eRate = (1 / Number(resjson.last)).toFixed(2)
+        console.log('The exchange rate from EUR to XRP: ' + eRate)
+ 
+        newRate = eRate * amount
+
+        return newRate
     }
 
     //new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
