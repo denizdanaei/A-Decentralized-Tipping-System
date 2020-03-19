@@ -8,6 +8,7 @@ function getUserData() {
 }
 
 function donateMoney() {  
+  document.getElementById('ValidationText').innerHTML = "";
   var amountval = document.getElementById("amount").value;
   console.log("amount " + amountval)
   // First check if the amount of tip is a valid number(Integer, Float)

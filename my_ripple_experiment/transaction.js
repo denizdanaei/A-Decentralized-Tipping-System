@@ -1,4 +1,3 @@
-
 function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     console.log("Public address webpage " + receiverAddress)
     console.log("Public address user " + senderAddress)
@@ -6,10 +5,10 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     console.log("tip amount " + amount)
 
     // For testing overwrite the arguments
-    receiverAddress = 'rUCzEr6jrEyMpjhs4wSdQdz4g8Y382NxfM'
-    senderAddress = 'rB76Ts8bXWnZVkqbFULYpwV9CaUaCFZ6hn'
-    privateKey = 'ss7ktBumXYJAF9PhkHmwhEUCD7Ldc'
-
+    receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
+    senderAddress = 'rnNoHDhUtUfM1ofkfrixt2Fioc5P7GELpM'
+    privateKey = 'snFhXTzrKMV9KvovUpJSgsSRmphhP'
+   
     api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
     var maxLedgerVersion = null
     var txID = null
@@ -19,24 +18,36 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     api.connect().then(() => {
         console.log('Connected to the API server' + '\n');
         
-        //The second step is to create the JSON file used for the transaction
-        doPrepare().then(txJSON => {  
+        checkBalance(senderAddress, amount).then(valid => {
         
-        //The third step is to sign the JSON file with the secret key
-        const response = api.sign(txJSON, privateKey)
-        txID = response.id
-        console.log("Identifying hash:", txID)
-        const txBlob = response.signedTransaction
-        console.log("Signed blob:", txBlob + '\n')
+            if (valid == true) {
+                //The second step is to create the JSON file used for the transaction
+                doPrepare().then(txJSON => {  
         
-        //The fourth step is to take the signed Blob and submit it too the ledger
-        doSubmit(txBlob).then(earliestLedgerVersion => {
+                //The third step is to sign the JSON file with the secret key
+                const response = api.sign(txJSON, privateKey)
+                txID = response.id
+                console.log("Identifying hash:", txID)
+                const txBlob = response.signedTransaction
+                console.log("Signed blob:", txBlob + '\n')
         
-        //The transaction has been submitted. this method checks on each ledger update if the transaction.
-        //has been accepted. if it has the success is logged and the process is ended    
-        validation(earliestLedgerVersion, maxLedgerVersion)
+                //The fourth step is to take the signed Blob and submit it too the ledger
+                doSubmit(txBlob).then(earliestLedgerVersion => {
         
-        }).catch(console.error)
+                //The transaction has been submitted. this method checks on each ledger update if the transaction.
+                //has been accepted. if it has the success is logged and the process is ended    
+                validation(earliestLedgerVersion, maxLedgerVersion)
+        
+                }).catch(console.error)
+
+                }).catch(console.error);
+            } else {
+                document.getElementById("donateButton").disabled = false;
+                document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
+                                                                       "<br> You can try again if you want.";
+                //document.getElementById('donateButton').addEventListener('click', donateMoney);
+                end()
+            }    
 
         }).catch(console.error);
 
@@ -48,6 +59,21 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
             console.log('API has disconnected');
             document.getElementById('donateButton').addEventListener('click', donateMoney);
         })
+    }
+
+    async function checkBalance(senderAddress, amount) {
+        info = await api.getAccountInfo(senderAddress)
+        if (Number(info.xrpBalance) >= Number(amount)) {
+            console.log('The account has enough xrp, the transaction can continue.')
+            console.log('amount trying to donate: ' + amount)
+            console.log('account balance: ' + info.xrpBalance)
+            return true
+        } else {
+            console.log('The account has too little xrp, cancel the transaction.')
+            console.log('amount trying to donate: ' + amount)
+            console.log('account balance: ' + info.xrpBalance)
+            return false
+        }
     }
 
     //new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
