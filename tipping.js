@@ -55,13 +55,18 @@ function showCorrectDiv(){
 }
 
 function askForTipping(){
-    var getHtmlBanner = browser.runtime.getURL("html/banner.html");
-    $('#popupContainer').load(getHtmlBanner, function() {
-    //When loaded. load event handlers
-    document.getElementById("confirmButton").addEventListener("click", showCorrectDiv);
-    document.getElementById("close").addEventListener("click", function(){
-        document.getElementById("toolbar").style.display = 'none';});
-    });
+    const metas = document.getElementsByTagName('meta');
+    for (let i = 0; i < metas.length; i++) {
+        if (metas[i].getAttribute('name') === 'Tudelft-tipping-extension') {
+            var getHtmlBanner = browser.runtime.getURL("html/banner.html");
+            $('#popupContainer').load(getHtmlBanner, function() {
+            //When loaded. load event handlers
+            document.getElementById("confirmButton").addEventListener("click", showCorrectDiv);
+            document.getElementById("close").addEventListener("click", function(){
+            document.getElementById("toolbar").style.display = 'none';});
+            });
+        }
+    }
 }
 
 // Show div to upload files(public address and private key)
