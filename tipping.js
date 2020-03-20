@@ -1,4 +1,5 @@
-showCorrectDiv()
+askForTipping()
+//showCorrectDiv()
 
 function getUserData() {
     var userData = {}
@@ -39,6 +40,7 @@ function getPublicAddressWebpage() {
   return 'The public address of this webpage is not found';
 }
 
+
 // Method to check wheter the user has uploaded their files
 function showCorrectDiv(){
   userData = getUserData()
@@ -53,6 +55,21 @@ function showCorrectDiv(){
   }
 }
 
+function askForTipping(){
+    const metas = document.getElementsByTagName('meta');
+    for (let i = 0; i < metas.length; i++) {
+        if (metas[i].getAttribute('name') === 'Tudelft-tipping-extension') {
+            var getHtmlBanner = browser.runtime.getURL("html/banner.html");
+            $('#popupContainer').load(getHtmlBanner, function() {
+            //When loaded. load event handlers
+            document.getElementById("confirmButton").addEventListener("click", showCorrectDiv);
+            document.getElementById("close").addEventListener("click", function(){
+            document.getElementById("toolbar").style.display = 'none';});
+            });
+        }
+    }
+}
+
 // Show div to upload files(public address and private key)
 function showUploadDiv() {
   var getHtmlUpload = browser.runtime.getURL("html/upload.html");
@@ -60,7 +77,7 @@ function showUploadDiv() {
     // When loaded, load event handlers
     document.getElementById('publicAddress').addEventListener('change', readAllFiles, false);
     document.getElementById('privateKey').addEventListener('change', readAllFiles, false);
-    document.getElementById("uploadButton").addEventListener("click", showTipDiv);
+    document.getElementById("uploadButton").addEventListener("click",showTipDiv);
   });
 
 }
@@ -92,8 +109,8 @@ function readAllFiles(evt) {
         };
       })(f);
       r.readAsText(f);
-    } 
+    }
     else {
       alert("Error loading files");
-    } 
+    }
 }
