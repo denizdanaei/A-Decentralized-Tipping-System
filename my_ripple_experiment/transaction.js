@@ -1,4 +1,3 @@
-
 function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     console.log("Public address webpage " + receiverAddress)
     console.log("Public address user " + senderAddress)
@@ -6,10 +5,10 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     console.log("tip amount " + amount)
 
     // For testing overwrite the arguments
-    receiverAddress = 'rUCzEr6jrEyMpjhs4wSdQdz4g8Y382NxfM'
-    senderAddress = 'rB76Ts8bXWnZVkqbFULYpwV9CaUaCFZ6hn'
-    privateKey = 'ss7ktBumXYJAF9PhkHmwhEUCD7Ldc'
-
+    receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
+    senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
+    privateKey = 'shtpSCSbCFfvyAZLuo7aYutvkkKeu'
+   
     api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
     var maxLedgerVersion = null
     var txID = null
@@ -19,28 +18,42 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
     api.connect().then(() => {
         console.log('Connected to the API server' + '\n');
         
-        //The second step is to create the JSON file used for the transaction
-        doPrepare().then(txJSON => {  
+        //The second step is to check if the user has enough balance on their account
+        //to make the tip.
+        checkBalance(senderAddress, amount).then(array => {
+            if (array[0] == true) {
+                amount = array[1]
+
+                //The third step is to create the JSON file used for the transaction
+                doPrepare().then(txJSON => {  
         
-            //The third step is to sign the JSON file with the secret key
-            const response = api.sign(txJSON, privateKey)
-            txID = response.id
-            console.log("Identifying hash:", txID)
-            const txBlob = response.signedTransaction
-            console.log("Signed blob:", txBlob + '\n')
-            
-            //The fourth step is to take the signed Blob and submit it too the ledger
-            doSubmit(txBlob).then(earliestLedgerVersion => {
-            
+                //The fourth step is to sign the JSON file with the secret key
+                const response = api.sign(txJSON, privateKey)
+                txID = response.id
+                console.log("Identifying hash:", txID)
+                const txBlob = response.signedTransaction
+                console.log("Signed blob:", txBlob + '\n')
+        
+                //The fifth step is to take the signed Blob and submit it too the ledger
+                doSubmit(txBlob).then(earliestLedgerVersion => {
+        
                 //The transaction has been submitted. this method checks on each ledger update if the transaction.
                 //has been accepted. if it has the success is logged and the process is ended    
                 validation(earliestLedgerVersion, maxLedgerVersion)
-                
-            }).catch(console.error)
+        
+                }).catch(console.error)
+
+                }).catch(console.error);
+            } else {
+                //If the user does not have enough balance inform them and exit the function without performing the transaction.
+                document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
+                                                                       "<br> You can try again if you want.";
+                end()
+            }    
 
         }).catch(console.error);
 
-    }).catch(console.error);
+        }).catch(console.error); 
    
     // function used to disconnect from the server and end the process
     function end(transactionResult) {
@@ -55,7 +68,62 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
                 alert("Transaction failed.\n error= "+transactionResult);
             }
             document.getElementById('donateButton').addEventListener('click', donateMoney);
+            console.log('button should be reactivated.')
         })
+    }
+    
+    // Helper method that when called forces a wait of a certain amount of milliseconds.
+    // This is called when the user doesn't have enough balance, sometimes that check goes so fast
+    // that it makes the donation button not trigger any functions anymore. Meaning the user cannot
+    // perform another transaction.
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    // Function used to check if the user has enough balance to make the tip transaction.
+    async function checkBalance(senderAddress, amount) {
+        // Account info is called because it contains the users balance.
+        info = await api.getAccountInfo(senderAddress)
+        
+        // The filled in amount is converted from EUR to XRP
+        newAmount = await exchangeRate(amount)
+        newAmount = newAmount.toFixed(2)
+        console.log("The to be donated amount in XRP: " + newAmount)
+        
+        // Check to see if the user has enough balance
+        if (Number(info.xrpBalance) >= Number(newAmount)) {
+            // The user has enough balance the transaction can be executed.
+            console.log('The account has enough xrp, the transaction can continue.')
+            console.log('amount trying to donate in euros: ' + amount)
+            console.log('amount trying to donate in xrp: ' + newAmount)
+            console.log('account balance: ' + info.xrpBalance)
+            return [true, newAmount];
+        } else {
+            // The user does not have enough balance the transaction must be cancelled
+            console.log('The account has too little xrp, cancel the transaction.')
+            console.log('amount trying to donate: ' + amount)
+            console.log('amount trying to donate in xrp: ' + newAmount)
+            console.log('account balance: ' + info.xrpBalance)
+            await sleep(2000)
+            return [false, newAmount];
+        }
+    }
+    
+    // Function used to convert the amount from EUR to XRP.
+    async function exchangeRate(amount) {
+        // The exchange rate is requested from this url.
+        response = await fetch('https://www.bitstamp.net/api/v2/ticker/xrpeur/')
+    
+        resjson = await response.json()   
+        console.log('The exchange rate from XRP to EUR: ' + Number(resjson.last))
+        
+        // The exchange rate is converted from XRP to EUR, to EUR to XRP.
+        eRate = (1 / Number(resjson.last)).toFixed(2)
+        console.log('The exchange rate from EUR to XRP: ' + eRate)
+        
+        // Calculate and return the amount in XRP
+        newRate = eRate * amount
+        return newRate
     }
 
     //new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
@@ -87,8 +155,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
             tx = await api.getTransaction(txID, {minLedgerVersion: earliestLedgerVersion})
             console.log("Transaction result:", tx.outcome.result)
             console.log("Balance changes:", JSON.stringify(tx.outcome.balanceChanges) + '\n')
-            document.getElementById("donateButton").disabled = false;
-            end(tx.outcome.result)  
+            end()  
             return true
         } catch(error) {
             console.log("Couldn't get transaction outcome:", error + '\n')

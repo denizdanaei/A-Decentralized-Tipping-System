@@ -41,5 +41,9 @@
 
 - Working on the Questionnaire
 - Creating my Journal (took quite a lot of time)
+- Research for first section of the report, (introduction, why cryptocurrency, ocasions to tip online, what are the solutions already there, what are the problems yet not addressed, what we offer, and what it solves and cannot solve)
+- transaction result notification implemented to the plugin
+- Furture research about tipping, systems that are there, their pros and cons, what we have tht they dont
 
 **17 Mar** Group Conference Call, working on the Questionnaire
+**19 Mar** Group Conference Call, working on the Questionnaire, discussed about improvments to code.
