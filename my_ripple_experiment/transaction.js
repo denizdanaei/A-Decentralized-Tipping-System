@@ -78,45 +78,21 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
         // Account info is called because it contains the users balance.
         info = await api.getAccountInfo(senderAddress)
         
-        // The filled in amount is converted from EUR to XRP
-        newAmount = await exchangeRate(amount)
-        newAmount = newAmount.toFixed(2)
-        console.log("The to be donated amount in XRP: " + newAmount)
-        
         // Check to see if the user has enough balance
-        if (Number(info.xrpBalance) >= Number(newAmount)) {
+        if (Number(info.xrpBalance) >= Number(amount)) {
             // The user has enough balance the transaction can be executed.
             console.log('The account has enough xrp, the transaction can continue.')
-            console.log('amount trying to donate in euros: ' + amount)
-            console.log('amount trying to donate in xrp: ' + newAmount)
+            console.log('amount trying to donate in xrp: ' + amount)
             console.log('account balance: ' + info.xrpBalance)
-            return [true, newAmount];
+            return [true, amount];
         } else {
             // The user does not have enough balance the transaction must be cancelled
             console.log('The account has too little xrp, cancel the transaction.')
-            console.log('amount trying to donate: ' + amount)
-            console.log('amount trying to donate in xrp: ' + newAmount)
+            console.log('amount trying to donate in xrp: ' + amount)
             console.log('account balance: ' + info.xrpBalance)
             await sleep(2000)
-            return [false, newAmount];
+            return [false, amount];
         }
-    }
-    
-    // Function used to convert the amount from EUR to XRP.
-    async function exchangeRate(amount) {
-        // The exchange rate is requested from this url.
-        response = await fetch('https://www.bitstamp.net/api/v2/ticker/xrpeur/')
-    
-        resjson = await response.json()   
-        console.log('The exchange rate from XRP to EUR: ' + Number(resjson.last))
-        
-        // The exchange rate is converted from XRP to EUR, to EUR to XRP.
-        eRate = (1 / Number(resjson.last)).toFixed(2)
-        console.log('The exchange rate from EUR to XRP: ' + eRate)
-        
-        // Calculate and return the amount in XRP
-        newRate = eRate * amount
-        return newRate
     }
 
     //new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
