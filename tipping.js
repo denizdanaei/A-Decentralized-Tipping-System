@@ -8,14 +8,36 @@ function getUserData() {
     return userData;
 }
 
-function donateMoney() {
+async function donateMoney() {  
+  document.getElementById('ValidationText').innerHTML = "";
   var amountval = document.getElementById("amount").value;
   console.log("amount " + amountval)
   // First check if the amount of tip is a valid number(Integer, Float)
   if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/)) || amountval == 0){
     alert("Please insert a valid number.")
   } else {
-    var confirmation = confirm("Are you sure you want to tip " + amountval + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+    // Retrieve the currency selected by the user.
+    var e = document.getElementById("ddlViewBy");
+    var strUser = e.value
+    
+    // Switch case user has either selected USD, EUR or XRP. and for each case the amount is converted
+    // to XRP and a custom confirmation screen is shown for each selected currency.
+    switch (String(strUser)) {
+      case "EUR":
+        newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ")
+        var confirmation = confirm("please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        break;
+      case "USD":
+        newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpusd/' , 'USD ')
+        var confirmation = confirm("please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        break;
+      case "XRP":
+        newAmountVal = amountval
+        console.log("The to be donated amount in XRP: " + newAmountVal)
+        var confirmation = confirm("please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        break;
+    }
+
     // Check if user really wants to tip x to the webpage
     if (confirmation) {
       var userData = {}
@@ -23,7 +45,7 @@ function donateMoney() {
       printXrpConnection(userData)
       document.getElementById("donateButton").disabled = true;
       // Start transaction
-      doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], amountval)
+      doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], newAmountVal)
     }
   }
 }
@@ -39,6 +61,24 @@ function getPublicAddressWebpage() {
   return 'The public address of this webpage is not found';
 }
 
+// Function used to convert the amount from either USD or EUR to XRP.
+async function exchangeRate(amount, url, currency) {
+  // The exchange rate is requested from the url.
+  response = await fetch(url)
+  resjson = await response.json()   
+  console.log('The exchange rate from XRP to ' + currency +  Number(resjson.last))
+        
+  // The exchange rate is converted from XRP to USD/EUR, to USD/EUR to XRP.
+  eRate = 1 / Number(resjson.last)
+  console.log('The exchange rate from ' + currency + 'to XRP ' + eRate)
+        
+  // Calculate and return the amount in XRP
+  newRate = eRate * amount
+  newRate = newRate.toFixed(2)
+  console.log("The to be donated amount in XRP: " + newRate)
+
+  return newRate
+}
 
 // Method to check wheter the user has uploaded their files
 function showCorrectDiv(){
