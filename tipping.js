@@ -25,16 +25,16 @@ async function donateMoney() {
     switch (String(strUser)) {
       case "EUR":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ")
-        var confirmation = confirm("please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        var confirmation = confirm("Please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
         break;
       case "USD":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpusd/' , 'USD ')
-        var confirmation = confirm("please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        var confirmation = confirm("Please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
         break;
       case "XRP":
         newAmountVal = amountval
         console.log("The to be donated amount in XRP: " + newAmountVal)
-        var confirmation = confirm("please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        var confirmation = confirm("Please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
         break;
     }
 
