@@ -34,4 +34,7 @@
 - Try to get a spinner loading when the transaction is done - 1.5 hours
 - Structured codebase (HTML excluded) - 1.5 hours
 - Increase security file reading - 6.5 hours
-- Report Background information
+- Tuesday & Fridays meeting - 3 hours
+## Week 7
+- Added feedback Mitchell to survey - 1 hour
+- Finished Requirements section start working on Design section - 3 hours
