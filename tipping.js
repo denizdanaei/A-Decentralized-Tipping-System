@@ -69,9 +69,6 @@ async function exchangeRate(amount, url, currency) {
 
   return newRate
 }
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 // Method to check wheter the user has uploaded their files
 async function showCorrectDiv(){
