@@ -1,10 +1,17 @@
 <div class="popup" style="position: absolute;  top: 20px;
   right: 0px; width:40%;">
   <div style="position:absolute; top: 50%;left: 50%; border-style: solid; background-color: lightblue;  padding:10px">
-  <span class="popuptext" id="myPopup" style"text-align:center;"><b>Do you want to tip?</b></span>
+  <span class="popuptext" id="myPopup" style"text-align:center;"><b>Do you want to tip? <br> Please insert the amount.</br></span>
   <br>
   <input type = "number" name = "amount" id = "amount" placeholder = "0"></input>
+  <select id="ddlViewBy">
+    <option value="XRP">XRP</option>
+    <option value="EUR">EUR</option>
+    <option value="USD">USD</option>
+  </select>
   <button type = "button" id = "donateButton"> Tip here </button>  
+  <br>
+  <span class="popuptext" id="CheckBalance" style"text-align:center;"><p id="ValidationText", style="color:red"></p></span>
   </span>
   </div>
   </div>
