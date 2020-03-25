@@ -58,11 +58,15 @@ function showUploadDiv() {
 
 // Show the div to tip the webpage
 function showTipDiv() {
-  var getHtmlTip = browser.runtime.getURL("html/tip.html");
-  $('#popupContainer').load(getHtmlTip, function() {
-    // When loaded, load event handlers
-    document.getElementById('donateButton').addEventListener('click', donateMoney);
-  });
+  if(senderAddress != null && privateKey != null) {
+    var getHtmlTip = browser.runtime.getURL("html/tip.html");
+    $('#popupContainer').load(getHtmlTip, function() {
+      // When loaded, load event handlers
+      document.getElementById('donateButton').addEventListener('click', donateMoney);
+    });
+  } else {
+    alert("Please upload files")
+  }
 }
 
 
