@@ -38,3 +38,5 @@
 ## Week 7
 - Added feedback Mitchell to survey - 1 hour
 - Finished Requirements section start working on Design section - 3 hours
+- Merge new way of saving credentials to current code base - 1 hour
+- Finished first version of Design section - 2 hours
