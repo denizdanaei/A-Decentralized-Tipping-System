@@ -10,6 +10,7 @@ function getUserData() {
 
 async function donateMoney() {  
   document.getElementById('ValidationText').innerHTML = "";
+  document.getElementById('TwitterButton').style.display = 'none';
   var amountval = document.getElementById("amount").value;
   console.log("amount " + amountval)
   // First check if the amount of tip is a valid number(Integer, Float)
@@ -125,6 +126,8 @@ function showUploadDiv() {
 function showTipDiv() {
   var getHtmlTip = browser.runtime.getURL("html/tip.html");
   $('#popupContainer').load(getHtmlTip, function() {
+    document.getElementById('TwitterButton').style.display = 'none';
+    
     // When loaded, load event handlers
     document.getElementById('donateButton').addEventListener('click', donateMoney);
   });

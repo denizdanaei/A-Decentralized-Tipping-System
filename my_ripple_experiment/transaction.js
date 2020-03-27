@@ -46,9 +46,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
                 }).catch(console.error);
             } else {
                 //If the user does not have enough balance inform them and exit the function without performing the transaction.
-                document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
-                                                                       "<br> You can try again if you want.";
-                end()
+                end("transaction was higher than user balance")
             }    
 
         }).catch(console.error);
@@ -56,10 +54,31 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
         }).catch(console.error); 
    
     // function used to disconnect from the server and end the process
-    function end() {
+    function end(transactionResult) {
         api.disconnect().then(() => {
+            let successTag = 'SUCCESS';
             console.log('API has disconnected');
-            document.getElementById('donateButton').disabled = false;  
+            if (transactionResult.includes(successTag))
+            {
+                document.getElementById('TwitterButton').style.display = 'inline-block';
+                console.log(window.location.href)                
+                document.getElementById('TwitterButton').href="https://twitter.com/intent/tweet/?text=" + "I just donated " + amount  +" XRP to website " + window.location.href 
+                         + " using the DTS plugin. More info about the plugin is available at:"  +   "&amp;url=https://github.com/denizdanaie/A-Decentralized-Tipping-System/";  
+                document.getElementById('ValidationText').style="color:green"
+                document.getElementById('ValidationText').innerHTML = "The transaction was succesfully processed.  <br> You can share your donation on social media.";    
+
+            } else if (transactionResult.includes("transaction was higher than user balance")) 
+            {
+                document.getElementById('ValidationText').style="color:red"
+                document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
+                                                                       "<br> You can try again if you want.";
+            } else 
+            {
+                document.getElementById('ValidationText').style="color:red"
+                document.getElementById('ValidationText').innerHTML = "Unfortunately The transaction was not succesfully processed. " + transactionResult;   
+            }
+            
+            document.getElementById('donateButton').disabled = false;
             document.getElementById('donateButton').addEventListener('click', donateMoney);
             console.log('button should be reactivated.')
         })
@@ -108,7 +127,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
         x = await logTransaction(earliestLedgerVersion)
         if (ledgerVersion > maxLedgerVersion) {
             console.log("If the transaction hasn't succeeded by now, it's expired")
-            end()
+            end("The validation of the transaction took to long")
             x = true 
         }
         if(x == false){
@@ -124,7 +143,7 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
             tx = await api.getTransaction(txID, {minLedgerVersion: earliestLedgerVersion})
             console.log("Transaction result:", tx.outcome.result)
             console.log("Balance changes:", JSON.stringify(tx.outcome.balanceChanges) + '\n')
-            end()  
+            end(tx.outcome.result)  
             return true
         } catch(error) {
             console.log("Couldn't get transaction outcome:", error + '\n')
