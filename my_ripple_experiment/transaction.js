@@ -67,15 +67,18 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
                 document.getElementById('ValidationText').style="color:green"
                 document.getElementById('ValidationText').innerHTML = "The transaction was succesfully processed.  <br> You can share your donation on social media.";    
 
-            } else if (transactionResult.includes("transaction was higher than user balance")) 
-            {
+            } else if (transactionResult.includes("transaction was higher than user balance")) {
                 document.getElementById('ValidationText').style="color:red"
                 document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
                                                                        "<br> You can try again if you want.";
-            } else 
-            {
+            } else if (transactionResult.includes("The validation of the transaction took to long")) {
                 document.getElementById('ValidationText').style="color:red"
-                document.getElementById('ValidationText').innerHTML = "Unfortunately The transaction was not succesfully processed. " + transactionResult;   
+                document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> The validation process timed out" +
+                                                                       "<br> You can try again if you want.";
+            } else {
+                document.getElementById('ValidationText').style="color:red"
+                document.getElementById('ValidationText').innerHTML = "Unfortunately The transaction was not succesfully processed. error code: " + transactionResult +
+                                                                      "<br> You can try again if you want."   
             }
             
             document.getElementById('donateButton').disabled = false;
