@@ -1,9 +1,13 @@
-function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
+
+async function doTransaction(receiverAddress, amount) {
+    senderAddress = await getCredentials('publicAddress.txt')
+    privateKey = await getCredentials('privateKey.txt')
+
     console.log("Public address webpage " + receiverAddress)
     console.log("Public address user " + senderAddress)
     console.log("Private key user " + privateKey)
     console.log("tip amount " + amount)
-
+    
     // For testing overwrite the arguments
     receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
     senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
@@ -194,8 +198,29 @@ function doTransaction(receiverAddress, senderAddress, privateKey, amount) {
         return latestLedgerVersion + 1
     }
 }
- 
-function printXrpConnection(userData) {
+
+// Function to get the credentials of the user
+async function getCredentials(filename) {
+    // Get path were credential is stored
+    var path = browser.runtime.getURL("/keys/" + filename);
+    const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
+    const file = await tmpFiles.get(path);
+    // Only open if its a mutable file.
+    // Check if file exists
+    if (typeof file !== 'undefined'){
+        if(file.open) {
+            const fh = file.open("readonly");
+            // Return value
+            const value = await fh.readAsText(200);
+            return value
+        }
+    } else {
+        return 0
+    }
+}
+
+
+function printXrpConnection() {
     var api = new ripple.RippleAPI({server:'wss://s1.ripple.com/'});
     api.connect().then(function() {
         return api.getServerInfo();
@@ -214,8 +239,6 @@ function printXrpConnection(userData) {
       "          <td>" + server_info.validatedLedger.hash + "</td></tr>" +
       "        <tr><th>Seconds since last ledger validated</th>" +
       "          <td>" + server_info.validatedLedger.age + "</td></tr>" +
-      "<tr><th>Sender address + private key</th>" +
-      "          <td>" + userData['publicAddress'] + " " + userData['privateKey'] + "</td></tr>" +
       "      </table>";
       });
   }

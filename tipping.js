@@ -1,12 +1,4 @@
 askForTipping()
-//showCorrectDiv()
-
-function getUserData() {
-    var userData = {}
-    userData.publicAddress = sessionStorage.getItem('publicAddress')
-    userData.privateKey = sessionStorage.getItem('privateKey')
-    return userData;
-}
 
 async function donateMoney() {  
   document.getElementById('ValidationText').innerHTML = "";
@@ -41,14 +33,12 @@ async function donateMoney() {
 
     // Check if user really wants to tip x to the webpage
     if (confirmation) {
-      var userData = {}
-      userData = getUserData()
-      printXrpConnection(userData)
+      printXrpConnection()
       document.getElementById("donateButton").disabled = true;
       // Start transaction
       document.getElementById('ValidationText').style="color:blue"
       document.getElementById('ValidationText').innerHTML = "The transaction is in progress...";
-      doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], newAmountVal)
+      doTransaction(getPublicAddressWebpage(), amountval)
     }
   }
 }
@@ -84,16 +74,16 @@ async function exchangeRate(amount, url, currency) {
 }
 
 // Method to check wheter the user has uploaded their files
-function showCorrectDiv(){
-  userData = getUserData()
-  pKey = userData['privateKey']
-  pAddress = userData['publicAddress']
-  if(pAddress != null && pKey != null && pAddress != 'pAddress' && pKey != 'pKey') {
-    // Tipping could be done
-    showTipDiv()
-  } else {
+async function showCorrectDiv(){
+  // Get credentials
+  senderAddress = await getCredentials('publicAddress.txt')
+  privateKey = await getCredentials('privateKey.txt')
+  if(senderAddress == 0 || privateKey == 0) {
     // Upload of files need to be done first
-    showUploadDiv()
+     showUploadDiv()
+  } else {
+    // Tipping could be done
+     showTipDiv()
   }
 }
 
@@ -119,42 +109,67 @@ function showUploadDiv() {
     // When loaded, load event handlers
     document.getElementById('publicAddress').addEventListener('change', readAllFiles, false);
     document.getElementById('privateKey').addEventListener('change', readAllFiles, false);
-    document.getElementById("uploadButton").addEventListener("click",showTipDiv);
+    document.getElementById("uploadButton").addEventListener("click", showTipDiv);
   });
-
 }
 
 // Show the div to tip the webpage
-function showTipDiv() {
-  var getHtmlTip = browser.runtime.getURL("html/tip.html");
-  $('#popupContainer').load(getHtmlTip, function() {
-    document.getElementById('TwitterButton').style.display = 'none';
-    
-    // When loaded, load event handlers
-    document.getElementById('donateButton').addEventListener('click', donateMoney);
-  });
+async function showTipDiv() {
+  // Reset error message
+  senderAddress = await getCredentials('publicAddress.txt')
+  privateKey = await getCredentials('privateKey.txt')
+
+  if(senderAddress != 0 && privateKey != 0) {
+    var getHtmlTip = browser.runtime.getURL("html/tip.html");
+    $('#popupContainer').load(getHtmlTip, function() {
+      document.getElementById('TwitterButton').style.display = 'none';
+      // When loaded, load event handlers
+      document.getElementById('donateButton').addEventListener('click', donateMoney);
+    });
+  } else {
+    document.getElementById('ValidationTextUpload').innerHTML = "";
+    // Check if files are uploaded
+    console.log(senderAddress)
+    console.log(privateKey)
+    if(senderAddress == 0 || privateKey == 0) {
+      document.getElementById('ValidationTextUpload').innerHTML = "One of the files was not uploaded succesfully. Please try again.";
+    }
+  }
 }
+
 
 
 // Method to read the data of the txt file => in the future upload path
 function readAllFiles(evt) {
-  var files = evt.target.files, i = 0, r, f;
-  if(files[0]){
-    f=files[0]
-    r = new FileReader();
-    r.onload = (function(f){
-      return function(e){
-        console.log("Before " + sessionStorage.getItem('publicAddress'))
-        console.log("Before " + sessionStorage.getItem('privateKey'))
-        // Set the correct key, value
-        sessionStorage.setItem(String(evt.originalTarget.id), e.target.result);
-        console.log("After " + sessionStorage.getItem('publicAddress'))
-        console.log("After " + sessionStorage.getItem('privateKey'))
-        };
-      })(f);
-      r.readAsText(f);
-    }
-    else {
-      alert("Error loading files");
-    }
+  if( document.getElementById(evt.originalTarget.id).files.length == 0 ){
+    console.log(evt.originalTarget.id)
+    document.getElementById('ValidationTextUpload').innerHTML = "Please upload";
+  } else {
+    var files = evt.target.files, i = 0, r, f;
+    if(files[0]){
+      f=files[0]
+      r = new FileReader();
+      r.onload = (function(f){
+        return function(e){
+          // Set the path of the file
+          insertDataStorage(String(evt.originalTarget.id), e.target.result)
+          };
+        })(f);
+        r.readAsText(f);
+      }
+      else {
+        alert("Error loading files");
+      } 
+  }
+}
+async function insertDataStorage(filename, value) {
+  filename = filename + ".txt"
+  const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
+  var path = browser.runtime.getURL("/keys/" + filename);
+  const file = await tmpFiles.createMutableFile(path);
+  const fh = file.open("readwrite");   
+  await fh.append(value);
+  await fh.close();
+  await file.persist();
+ 
 }
