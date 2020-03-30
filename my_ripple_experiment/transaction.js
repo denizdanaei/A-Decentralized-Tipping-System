@@ -68,15 +68,7 @@ async function doTransaction(receiverAddress, amount) {
             console.log('button should be reactivated.')
         })
     }
-    
-    // Helper method that when called forces a wait of a certain amount of milliseconds.
-    // This is called when the user doesn't have enough balance, sometimes that check goes so fast
-    // that it makes the donation button not trigger any functions anymore. Meaning the user cannot
-    // perform another transaction.
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    
+
     // Function used to check if the user has enough balance to make the tip transaction.
     async function checkBalance(senderAddress, amount) {
         // Account info is called because it contains the users balance.
@@ -196,6 +188,45 @@ async function getCredentials(filename) {
         return 0
     }
 }
+
+
+
+
+async function getBalanceWebPage(address) {
+    console.log("Address " + address)
+    api = new ripple.RippleAPI({server: 'wss://s1.ripple.com/'})
+
+    //the first step is to connect to the API server
+    api.connect().then(() => {
+        console.log('Connected to the API server' + '\n');
+        //The second step is to get the balance of the webpage
+        getBalance(address).then(array => {
+            amount = array[0]
+            document.getElementById("xrpTipped").innerHTML = amount
+            return amount
+            // return amount
+        }).catch(console.error + "test1");
+
+        }).catch(console.error + "test2"); 
+
+        // Function used to check if the user has enough balance to make the tip transaction.
+    async function getBalance(senderAddress) {
+        // Account info is called because it contains the users balance.
+        info = await api.getAccountInfo(senderAddress)
+        // Check amount of tipped to webpage
+        return [info.xrpBalance];
+    }
+}
+
+    // Helper method that when called forces a wait of a certain amount of milliseconds.
+    // This is called when the user doesn't have enough balance, sometimes that check goes so fast
+    // that it makes the donation button not trigger any functions anymore. Meaning the user cannot
+    // perform another transaction.
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+
 
 
 function printXrpConnection() {

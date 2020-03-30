@@ -84,19 +84,21 @@ async function showCorrectDiv(){
   }
 }
 
-function askForTipping(){
-    const metas = document.getElementsByTagName('meta');
-    for (let i = 0; i < metas.length; i++) {
-        if (metas[i].getAttribute('name') === 'Tudelft-tipping-extension') {
-            var getHtmlBanner = browser.runtime.getURL("html/banner.html");
-            $('#popupContainer').load(getHtmlBanner, function() {
-            //When loaded. load event handlers
+async function askForTipping(){
+  const metas = document.getElementsByTagName('meta');
+  for (let i = 0; i < metas.length; i++) {
+      if (metas[i].getAttribute('name') === 'Tudelft-tipping-extension') {
+          var getHtmlBanner = browser.runtime.getURL("html/banner.html");
+          await getBalanceWebPage(getPublicAddressWebpage())
+          $('#popupContainer').load(getHtmlBanner, function() {
+          //When loaded. load event handlers
+            // document.getElementById("xrpTipped").innerHTML = amountTipped
             document.getElementById("confirmButton").addEventListener("click", showCorrectDiv);
             document.getElementById("close").addEventListener("click", function(){
             document.getElementById("toolbar").style.display = 'none';});
-            });
-        }
-    }
+          });
+      }
+  }
 }
 
 // Show div to upload files(public address and private key)
@@ -115,12 +117,15 @@ async function showTipDiv() {
   // Reset error message
   senderAddress = await getCredentials('publicAddress.txt')
   privateKey = await getCredentials('privateKey.txt')
+  console.log(senderAddress)
+  console.log(privateKey)
 
   if(senderAddress != 0 && privateKey != 0) {
     var getHtmlTip = browser.runtime.getURL("html/tip.html");
     $('#popupContainer').load(getHtmlTip, function() {
       // When loaded, load event handlers
       document.getElementById('donateButton').addEventListener('click', donateMoney);
+
     });
   } else {
     document.getElementById('ValidationTextUpload').innerHTML = "";
@@ -132,7 +137,6 @@ async function showTipDiv() {
     }
   }
 }
-
 
 
 // Method to read the data of the txt file => in the future upload path
