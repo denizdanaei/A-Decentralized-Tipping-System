@@ -38,7 +38,7 @@ async function donateMoney() {
       // Start transaction
       document.getElementById('ValidationText').style="color:blue"
       document.getElementById('ValidationText').innerHTML = "The transaction is in progress...";
-      doTransaction(getPublicAddressWebpage(), amountval)
+      doTransaction(getPublicAddressWebpage(), newAmountVal)
     }
   }
 }
