@@ -46,6 +46,8 @@ async function donateMoney() {
       printXrpConnection(userData)
       document.getElementById("donateButton").disabled = true;
       // Start transaction
+      document.getElementById('ValidationText').style="color:blue"
+      document.getElementById('ValidationText').innerHTML = "The transaction is in progress...";
       doTransaction(getPublicAddressWebpage(), userData['publicAddress'], userData['privateKey'], newAmountVal)
     }
   }
