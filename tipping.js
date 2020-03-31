@@ -2,6 +2,7 @@ askForTipping()
 
 async function donateMoney() {  
   document.getElementById('ValidationText').innerHTML = "";
+  document.getElementById('TwitterButton').style.display = 'none';
   var amountval = document.getElementById("amount").value;
   console.log("amount " + amountval)
   // First check if the amount of tip is a valid number(Integer, Float)
@@ -35,7 +36,9 @@ async function donateMoney() {
       printXrpConnection()
       document.getElementById("donateButton").disabled = true;
       // Start transaction
-      doTransaction(getPublicAddressWebpage(), amountval)
+      document.getElementById('ValidationText').style="color:blue"
+      document.getElementById('ValidationText').innerHTML = "The transaction is in progress...";
+      doTransaction(getPublicAddressWebpage(), newAmountVal)
     }
   }
 }
@@ -119,6 +122,7 @@ async function showTipDiv() {
   if(senderAddress != 0 && privateKey != 0) {
     var getHtmlTip = browser.runtime.getURL("html/tip.html");
     $('#popupContainer').load(getHtmlTip, function() {
+      document.getElementById('TwitterButton').style.display = 'none';
       // When loaded, load event handlers
       document.getElementById('donateButton').addEventListener('click', donateMoney);
     });
