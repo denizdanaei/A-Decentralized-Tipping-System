@@ -40,3 +40,9 @@
 - Finished Requirements section start working on Design section - 3 hours
 - Merge new way of saving credentials to current code base - 1 hour
 - Finished first version of Design section - 2 hours
+- Meeting(s) + Fill in Informed consent form - 4 hours
+
+## Week 8
+- Show total amount tipped to web page - 3 hours
+- Improve design section - 5 hours
+- Meeting and disucssing current work - 2 hours
