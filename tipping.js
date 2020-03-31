@@ -59,7 +59,6 @@ async function exchangeRate(amount, url, currency) {
   // The exchange rate is requested from the url.
   response = await fetch(url)
   resjson = await response.json()   
-  console.log(resjson.last)
 
   console.log('The exchange rate from XRP to ' + currency +  Number(resjson.last))
         
