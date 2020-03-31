@@ -19,7 +19,7 @@
     {
 
       "matches": ["http://localhost/*"],
-      "js": ["my_ripple_experiment/idb-file-storage.js", "my_ripple_experiment/jquery.js", "my_ripple_experiment/underscore-min.js", "my_ripple_experiment/lodash.js", "my_ripple_experiment/ripple-latest.js","my_ripple_experiment/transaction.js", "tipping.js"]
+      "js": ["my_ripple_experiment/idb-file-storage.js","my_ripple_experiment/sinon-9.0.1.js", "my_ripple_experiment/jquery.js", "my_ripple_experiment/underscore-min.js", "my_ripple_experiment/lodash.js", "my_ripple_experiment/ripple-latest.js","my_ripple_experiment/transaction.js", "tipping.js"]
     }
   ]
 }

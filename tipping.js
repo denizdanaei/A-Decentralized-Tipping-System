@@ -59,6 +59,8 @@ async function exchangeRate(amount, url, currency) {
   // The exchange rate is requested from the url.
   response = await fetch(url)
   resjson = await response.json()   
+  console.log(resjson.last)
+
   console.log('The exchange rate from XRP to ' + currency +  Number(resjson.last))
         
   // The exchange rate is converted from XRP to USD/EUR, to USD/EUR to XRP.
@@ -162,6 +164,7 @@ function readAllFiles(evt) {
       } 
   }
 }
+
 async function insertDataStorage(filename, value) {
   filename = filename + ".txt"
   const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
@@ -171,5 +174,4 @@ async function insertDataStorage(filename, value) {
   await fh.append(value);
   await fh.close();
   await file.persist();
- 
 }
