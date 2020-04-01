@@ -1,6 +1,6 @@
 askForTipping()
 
-async function donateMoney() {  
+async function donateMoney() {
   document.getElementById('ValidationText').innerHTML = "";
   document.getElementById('TwitterButton').style.display = 'none';
   var amountval = document.getElementById("amount").value;
@@ -12,9 +12,11 @@ async function donateMoney() {
     // Retrieve the currency selected by the user.
     var e = document.getElementById("ddlViewBy");
     var strUser = e.value
+    console.log("DIT IS " +  strUser)
     
     // Switch case user has either selected USD, EUR or XRP. and for each case the amount is converted
     // to XRP and a custom confirmation screen is shown for each selected currency.
+    console.log("TESTINPUT " + strUser)
     switch (String(strUser)) {
       case "EUR":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ")
@@ -78,6 +80,7 @@ async function exchangeRate(amount, url, currency) {
 async function showCorrectDiv(){
   // Get credentials
   senderAddress = await getCredentials('publicAddress.txt')
+  console.log(senderAddress)
   privateKey = await getCredentials('privateKey.txt')
   if(senderAddress == 0 || privateKey == 0) {
     // Upload of files need to be done first
