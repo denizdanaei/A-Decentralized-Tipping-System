@@ -19,6 +19,7 @@ module.exports = function(config) {
       // do not include tests or libraries
       // (these files will be instrumented by Istanbul)
       'tipping.js': ['coverage']
+      // 'my_ripple_experiment/transaction.js': ['coverage']
     },
 
     plugins: [

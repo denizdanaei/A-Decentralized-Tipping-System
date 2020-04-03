@@ -1,19 +1,19 @@
-describe("Tipping Tests", function() {
-
-  it("Get public address webpage - empty", function() {
-    // Get address op public webpage
-    expect(getPublicAddressWebpage()).toEqual('The public address of this webpage is not found');
-  });
 
 
-  it("Get public address webpage - filled", function() {
-    // Create fake address and add to document
-    var meta = document.createElement('meta');
-    meta.name = "Tudelft-tipping-extension";
-    meta.content = "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf";
-    document.getElementsByTagName('head')[0].appendChild(meta);
-    expect(getPublicAddressWebpage()).toEqual('r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf');
-  });
+describe("Tipping getAddress", function() {
+	
+	beforeEach(function () {
+		document.body.innerHTML = '';
+	});
+
+	it("Get public address webpage - filled", function() {
+		// Create fake address and add to document
+		var meta = document.createElement('meta');
+		meta.name = "Tudelft-tipping-extension";
+		meta.content = "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf";
+		document.getElementsByTagName('head')[0].appendChild(meta);
+		expect(getPublicAddressWebpage()).toEqual('r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf');
+	});	
 });
 describe('exchangeRate EUR', function() {
 	var exchangeRatePromise;
@@ -132,51 +132,96 @@ describe('Donate Money - ', function() {
 		spyOn(window, 'alert');
 		donateMoney()
 		expect(window.alert).toHaveBeenCalledWith('Please insert a valid number.');
-
 	});
 });
 
 
 //  Want to test the case where a valid number if filled in but for some reason i am not able to mock the "var e = document.getElementById("ddlViewBy");" in the else case of donateMoney
 
-// describe('Donate Money - ', function() {
-// 	beforeEach(function() {
-// 		// Spy on checking the users credentials
-// 		spyOn(window, 'doTransaction').and.returnValue(100);	
-// 		spyOn(window, 'exchangeRate').and.returnValue(120)
-// 		// spyOn(window, 'showTipDiv');
-	
-// 		// Get credentials promise
-// 	})
+describe('Donate Money - EUR ', function() {
 
-// 	it('Donate money - correct inserted', async function() 
-// 		First try
-// 		var input = document.createElement("input");
-// 		input.type = "number";
-// 		input.name = "amount"
-// 		input.id = "amount"
+	beforeEach(function() {
+		document.body.innerHTML = '';	  
+		// Spy on checking the users credentials
+		spyOn(window, 'doTransaction').and.returnValue(100);	
+		spyOn(window, 'exchangeRate').and.returnValue(120);
+		spyOn(window, 'confirm').and.returnValue(true);
+		spyOn(window, 'printXrpConnection').and.returnValue("test");
 
-// 		document.getElementsByTagName('body')[0].appendChild(input);
+		// Set HTML needed for testing
+		var meta = document.createElement('meta');
+		meta.name = "Tudelft-tipping-extension";
+		meta.content = "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf";
+		document.getElementsByTagName('head')[0].appendChild(meta);
+		document.body.innerHTML += '<p id="ValidationText", style="color:red"></p>'
+		document.body.innerHTML += '<button id = "TwitterButton" style="display:none">'
+		document.body.innerHTML += '<input type = "number" id = "amount" name = "number" value = "12">';
+		document.body.innerHTML += '<select id = "ddlViewBy"><option selected value="EUR">EUR</option></select>';
+		document.body.innerHTML += '<button id = "donateButton" disabled>';
+	})
 
-// 		Second try
-// 		var dummyElement = document.createElement('button');
-// 		document.getElementById = jasmine.createSpy('TwitterButton').and.returnValue(dummyElement);
+	it('Donate money - Correct inserted EUR confirm test', async function() {
+		// First try		
+        await donateMoney()
+        var confirmation = "Please confirm that you want to tip 12 EUR?" + " This will be done by tipping 120 in XRP." + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
+		expect(window.confirm).toHaveBeenCalledWith(confirmation);
+	});
+});
 
-// 		var dummyElement = document.createElement('number');
-// 		document.getElementById = jasmine.createSpy('amount').and.returnValue(10);
+describe('Donate Money - USD ', function() {
+	beforeEach(function() {
+		document.body.innerHTML = '';
+		// Spy on checking the users credentials
+		spyOn(window, 'doTransaction').and.returnValue(100);	
+		spyOn(window, 'exchangeRate').and.returnValue(120);
+		spyOn(window, 'confirm').and.returnValue(true);
+		spyOn(window, 'printXrpConnection').and.returnValue("test");
 
-// 		var dummyElement = document.createElement('select');
-// 		document.getElementById.value = jasmine.createSpy('ddlViewBy').and.returnValue('EUR ');
+		// Set HTML needed for testing
+		var meta = document.createElement('meta');
+		meta.name = "Tudelft-tipping-extension";
+		meta.content = "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf";
+		document.getElementsByTagName('head')[0].appendChild(meta);
+		document.body.innerHTML += '<p id="ValidationText", style="color:red"></p>'
+		document.body.innerHTML += '<button id = "TwitterButton" style="display:none">'
+		document.body.innerHTML += '<input type = "number" id = "amount" name = "number" value = "12">';
+		document.body.innerHTML += '<select id = "ddlViewBy"><option selected value="USD">USD</option></select>';
+		document.body.innerHTML += '<button id = "donateButton" disabled>';
+	})
 
-// 		const spy = spyOnProperty(document, 'amount', 'get').andReturn(1);
+	it('Donate money - Correct inserted USD confirm test', async function() {
+		// First try		
+        await donateMoney()
+        var confirmation = "Please confirm that you want to tip 12 USD?" + " This will be done by tipping 120 in XRP." + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
+		expect(window.confirm).toHaveBeenCalledWith(confirmation);
+	});
+});
 
-// 		// spyOn(window, 'exchangeRate');
-// 		donateMoney()
-// 		expect(window.exchangeRate).toHaveBeenCalledWith(1, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ");
+describe('Donate Money - XRP ', function() {
+	beforeEach(function() {
+		document.body.innerHTML = '';
+		// Spy on checking the users credentials
+		spyOn(window, 'doTransaction').and.returnValue(100);	
+		spyOn(window, 'exchangeRate').and.returnValue(120);
+		spyOn(window, 'confirm').and.returnValue(true);
+		spyOn(window, 'printXrpConnection').and.returnValue("test");
 
-// 	});
-// });// WHY IS THIS NOT CALLED?!
-	// it('Get public empty file', async function() {
-	// 	expect(window.showTipDiv).toHaveBeenCalled()
-	// });
-// });
+		// Set HTML needed for testing
+		var meta = document.createElement('meta');
+		meta.name = "Tudelft-tipping-extension";
+		meta.content = "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf";
+		document.getElementsByTagName('head')[0].appendChild(meta);
+		document.body.innerHTML += '<p id="ValidationText", style="color:red"></p>'
+		document.body.innerHTML += '<button id = "TwitterButton" style="display:none">'
+		document.body.innerHTML += '<input type = "number" id = "amount" name = "number" value = "12">';
+		document.body.innerHTML += '<select id = "ddlViewBy"><option selected value="XRP">XRP</option></select>';
+		document.body.innerHTML += '<button id = "donateButton" disabled>';
+	})
+
+	it('Donate money - Correct inserted XRP test', async function() {
+		// First try		
+        await donateMoney()
+        var confirmation = "Please confirm that you want to tip 12 XRP?" + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
+		expect(window.confirm).toHaveBeenCalledWith(confirmation);
+	});
+});
