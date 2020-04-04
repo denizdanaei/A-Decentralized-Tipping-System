@@ -102,20 +102,27 @@ describe('showCorrectDiv Filled - ', function() {
 		// Spy on checking the users credentials
 		spyOn(window, 'getCredentials').and.returnValue('testdata');	
 		spyOn(window, 'showTipDiv');
-
 		showCorrectDiv()
+	})
+	it('Get public empty file', async function() {
+		expect(window.getCredentials).toHaveBeenCalledWith("publicAddress.txt");
+	});	
+});
 
+describe('showTipDiv Filled ', function() {
+	beforeEach(function() {
+		// Spy on checking the users credentials
+		document.body.innerHTML += '<p id="ValidationTextUpload", style="color:red">'
+		var spyObj = spyOn(window, 'getCredentials').and.returnValue(0);
+		showTipDiv()
 		// Get credentials promise
 	})
 
 	it('Get public empty file', async function() {
-		expect(window.getCredentials).toHaveBeenCalledWith("publicAddress.txt");
+		expect(window.getCredentials).toHaveBeenCalledTimes(1);
 	});
-	// WHY IS THIS NOT CALLED?!
-	// it('Get public empty file', async function() {
-	// 	expect(window.showTipDiv).toHaveBeenCalled()
-	// });
 });
+
 
 
 describe('Donate Money - ', function() {
@@ -199,7 +206,7 @@ describe('Donate Money - USD ', function() {
 
 describe('Donate Money - XRP ', function() {
 	beforeEach(function() {
-		document.body.innerHTML = '';
+		document.body.innerHTML = '';	
 		// Spy on checking the users credentials
 		spyOn(window, 'doTransaction').and.returnValue(100);	
 		spyOn(window, 'exchangeRate').and.returnValue(120);

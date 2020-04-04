@@ -3,10 +3,10 @@ async function doTransaction(receiverAddress, amount) {
     senderAddress = await getCredentials('publicAddress.txt')
     privateKey = await getCredentials('privateKey.txt')
 
-    console.log("Public address webpage " + receiverAddress)
-    console.log("Public address user " + senderAddress)
-    console.log("Private key user " + privateKey)
-    console.log("tip amount " + amount)
+    // console.log("Public address webpage " + receiverAddress)
+    // console.log("Public address user " + senderAddress)
+    // console.log("Private key user " + privateKey)
+    // console.log("tip amount " + amount)
     
     // For testing overwrite the arguments
     receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
