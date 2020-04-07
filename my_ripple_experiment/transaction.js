@@ -6,7 +6,7 @@ async function doTransaction(receiverAddress, amount) {
 
     console.log("Public address webpage " + receiverAddress)
     console.log("Public address user " + senderAddress)
-    console.log("Private key user " + privateKey)
+    // console.log("Private key user " + privateKey)
     console.log("tip amount " + amount)
     
     // For testing overwrite the arguments
