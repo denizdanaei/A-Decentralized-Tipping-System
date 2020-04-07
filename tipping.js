@@ -6,7 +6,7 @@ async function donateMoney() {
   var amountval = document.getElementById("amount").value;
   console.log("amount " + amountval)
   // First check if the amount of tip is a valid number(Integer, Float)
-  if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/)) || amountval == 0){
+  if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/)) || amountval <= 0){
     alert("Please insert a valid number.")
   } else {
     // Retrieve the currency selected by the user.
@@ -33,7 +33,7 @@ async function donateMoney() {
 
     // Check if user really wants to tip x to the webpage
     if (confirmation) {
-      printXrpConnection()
+      // printXrpConnection()
       document.getElementById("donateButton").disabled = true;
       // Start transaction
       document.getElementById('ValidationText').style="color:blue"
