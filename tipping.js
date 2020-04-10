@@ -1,6 +1,6 @@
 askForTipping()
 
-async function donateMoney() {  
+async function donateMoney() {
   document.getElementById('ValidationText').innerHTML = "";
   document.getElementById('TwitterButton').style.display = 'none';
   var amountval = document.getElementById("amount").value;
@@ -11,26 +11,32 @@ async function donateMoney() {
   } else {
     // Retrieve the currency selected by the user.
     var e = document.getElementById("ddlViewBy");
-    var strUser = e.value
-    
+    var strUser = e.value    
     // Switch case user has either selected USD, EUR or XRP. and for each case the amount is converted
     // to XRP and a custom confirmation screen is shown for each selected currency.
+  
+    var confirmationMessage = ''
+    var newAmountVal = 0
     switch (String(strUser)) {
       case "EUR":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ")
-        var confirmation = confirm("Please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        confirmationMessage = "Please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
       case "USD":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpusd/' , 'USD ')
-        var confirmation = confirm("Please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        confirmationMessage = "Please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
       case "XRP":
         newAmountVal = amountval
-        console.log("The to be donated amount in XRP: " + newAmountVal)
-        var confirmation = confirm("Please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        confirmationMessage = "Please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
     }
-
+    var confirmation = false
+    if(checkMinAmount(newAmountVal)) {
+      confirmation = confirm(confirmationMessage)
+    } else {
+      alert("The selected amount is below the minimum of 0.000001 XRP")
+    }
     // Check if user really wants to tip x to the webpage
     if (confirmation) {
       printXrpConnection()
@@ -40,6 +46,13 @@ async function donateMoney() {
       document.getElementById('ValidationText').innerHTML = "The transaction is in progress...";
       doTransaction(getPublicAddressWebpage(), newAmountVal)
     }
+  }
+}
+function checkMinAmount(amount) {
+  if(amount >= 1e-6) { 
+    return true
+  } else {
+    return false
   }
 }
 
@@ -59,6 +72,7 @@ async function exchangeRate(amount, url, currency) {
   // The exchange rate is requested from the url.
   response = await fetch(url)
   resjson = await response.json()   
+
   console.log('The exchange rate from XRP to ' + currency +  Number(resjson.last))
         
   // The exchange rate is converted from XRP to USD/EUR, to USD/EUR to XRP.
@@ -67,7 +81,7 @@ async function exchangeRate(amount, url, currency) {
         
   // Calculate and return the amount in XRP
   newRate = eRate * amount
-  newRate = newRate.toFixed(2)
+  newRate = newRate.toFixed(6)
   console.log("The to be donated amount in XRP: " + newRate)
 
   return newRate
@@ -129,8 +143,7 @@ async function showTipDiv() {
   } else {
     document.getElementById('ValidationTextUpload').innerHTML = "";
     // Check if files are uploaded
-    console.log(senderAddress)
-    console.log(privateKey)
+    
     if(senderAddress == 0 || privateKey == 0) {
       document.getElementById('ValidationTextUpload').innerHTML = "One of the files was not uploaded succesfully. Please try again.";
     }
@@ -162,6 +175,7 @@ function readAllFiles(evt) {
       } 
   }
 }
+
 async function insertDataStorage(filename, value) {
   filename = filename + ".txt"
   const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
@@ -171,5 +185,4 @@ async function insertDataStorage(filename, value) {
   await fh.append(value);
   await fh.close();
   await file.persist();
- 
 }
