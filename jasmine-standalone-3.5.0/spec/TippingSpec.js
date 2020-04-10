@@ -92,10 +92,9 @@ describe('showCorrectDiv Empty - ', function() {
 	})
 
 	it('Get public file', async function() {
-		expect(window.getCredentials).toHaveBeenCalledWith("publicAddress.txt");
+        expect(window.getCredentials).toHaveBeenCalledWith("publicAddress.txt");
 	});
 });
-
 
 describe('showCorrectDiv Filled - ', function() {
 	beforeEach(function() {
@@ -124,6 +123,21 @@ describe('showTipDiv Filled ', function() {
 });
 
 
+// describe('readall ', function() {
+// 	beforeEach(function() {
+// 		// Spy on checking the users credentials
+//         document.body.innerHTML += '<p id="ValidationTextUpload", style="color:red">'
+//         spyOn(document, 'getElementById').and.returnValue(6)
+// 		//var spyObj = spyOn(window, 'getCredentials').and.returnValue(0);
+// 		//showTipDiv()
+// 		// Get credentials promise
+// 	})
+
+// 	it('readall', async function() {
+//         expect(document.getElementById('ValidationTextUpload').innerHTML).toEqual("Please upload")
+//         //expect(window.getCredentials).toHaveBeenCalledTimes(1);
+// 	});
+// });
 
 describe('Donate Money - ', function() {
 	beforeEach(function() {
@@ -148,12 +162,13 @@ describe('Donate Money - ', function() {
 describe('Donate Money - EUR ', function() {
 
 	beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 		document.body.innerHTML = '';	  
 		// Spy on checking the users credentials
 		spyOn(window, 'doTransaction').and.returnValue(100);	
 		spyOn(window, 'exchangeRate').and.returnValue(120);
-		spyOn(window, 'confirm').and.returnValue(true);
-		spyOn(window, 'printXrpConnection').and.returnValue("test");
+        spyOn(window, 'confirm').and.returnValue(true);
+		//spyOn(window, 'printXrpConnection').and.returnValue("test");
 
 		// Set HTML needed for testing
 		var meta = document.createElement('meta');
@@ -170,19 +185,31 @@ describe('Donate Money - EUR ', function() {
 	it('Donate money - Correct inserted EUR confirm test', async function() {
 		// First try		
         await donateMoney()
-        var confirmation = "Please confirm that you want to tip 12 EUR?" + " This will be done by tipping 120 in XRP." + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
-		expect(window.confirm).toHaveBeenCalledWith(confirmation);
-	});
+        //await sleep(29000)
+
+        expect(window.exchangeRate).toHaveBeenCalledWith('12', 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', 'EUR ');
+        expect(window.doTransaction).toHaveBeenCalled();
+        
+        //var confirmation = "Please confirm that you want to tip 12 EUR?" + " This will be done by tipping 120 in XRP." + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
+		//expect(window.confirm).toHaveBeenCalledWith(confirmation);
+    });
+    
+    // afterEach(function(done) {
+	// 	expect(window.exchangeRate).toHaveBeenCalledWith('12', 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', 'EUR ');
+    //     expect(window.doTransaction).toHaveBeenCalled();
+	// 	done();
+  	// });
 });
 
 describe('Donate Money - USD ', function() {
 	beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 		document.body.innerHTML = '';
 		// Spy on checking the users credentials
 		spyOn(window, 'doTransaction').and.returnValue(100);	
 		spyOn(window, 'exchangeRate').and.returnValue(120);
 		spyOn(window, 'confirm').and.returnValue(true);
-		spyOn(window, 'printXrpConnection').and.returnValue("test");
+		//spyOn(window, 'printXrpConnection').and.returnValue("test");
 
 		// Set HTML needed for testing
 		var meta = document.createElement('meta');
@@ -199,19 +226,25 @@ describe('Donate Money - USD ', function() {
 	it('Donate money - Correct inserted USD confirm test', async function() {
 		// First try		
         await donateMoney()
-        var confirmation = "Please confirm that you want to tip 12 USD?" + " This will be done by tipping 120 in XRP." + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
-		expect(window.confirm).toHaveBeenCalledWith(confirmation);
+        //await sleep(29000)
+
+        expect(window.exchangeRate).toHaveBeenCalledWith('12', 'https://www.bitstamp.net/api/v2/ticker/xrpusd/', 'USD ');
+        expect(window.doTransaction).toHaveBeenCalled();
+
+        //var confirmation = "Please confirm that you want to tip 12 USD?" + " This will be done by tipping 120 in XRP." + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
+		//expect(window.confirm).toHaveBeenCalledWith(confirmation);
 	});
 });
 
 describe('Donate Money - XRP ', function() {
 	beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 		document.body.innerHTML = '';	
 		// Spy on checking the users credentials
 		spyOn(window, 'doTransaction').and.returnValue(100);	
 		spyOn(window, 'exchangeRate').and.returnValue(120);
 		spyOn(window, 'confirm').and.returnValue(true);
-		spyOn(window, 'printXrpConnection').and.returnValue("test");
+		//spyOn(window, 'printXrpConnection').and.returnValue("test");
 
 		// Set HTML needed for testing
 		var meta = document.createElement('meta');
@@ -228,7 +261,12 @@ describe('Donate Money - XRP ', function() {
 	it('Donate money - Correct inserted XRP test', async function() {
 		// First try		
         await donateMoney()
-        var confirmation = "Please confirm that you want to tip 12 XRP?" + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
-		expect(window.confirm).toHaveBeenCalledWith(confirmation);
+        //await sleep(29000)
+        
+        expect(window.exchangeRate).not.toHaveBeenCalled();
+        expect(window.doTransaction).toHaveBeenCalled();
+
+        //var confirmation = "Please confirm that you want to tip 12 XRP?" + "\n \nThe tip will be send to: " + "r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf"
+		//expect(window.confirm).toHaveBeenCalledWith(confirmation);
 	});
 });

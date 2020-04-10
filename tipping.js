@@ -35,7 +35,7 @@ async function donateMoney() {
 
     // Check if user really wants to tip x to the webpage
     if (confirmation) {
-      printXrpConnection()
+      //printXrpConnection()
       document.getElementById("donateButton").disabled = true;
       // Start transaction
       document.getElementById('ValidationText').style="color:blue"

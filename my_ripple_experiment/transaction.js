@@ -1,3 +1,6 @@
+function API(url) {
+    return new ripple.RippleAPI({server: url})
+}
 
 async function doTransaction(receiverAddress, amount) {
     senderAddress = await getCredentials('publicAddress.txt')
@@ -13,7 +16,8 @@ async function doTransaction(receiverAddress, amount) {
     senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
     privateKey = 'shtpSCSbCFfvyAZLuo7aYutvkkKeu'
    
-    api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
+    //api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
+    api = API('wss://s.altnet.rippletest.net:51233')
     var maxLedgerVersion = null
     var txID = null
 
@@ -24,67 +28,73 @@ async function doTransaction(receiverAddress, amount) {
         
         //The second step is to check if the user has enough balance on their account
         //to make the tip.
-        checkBalance(senderAddress, amount).then(array => {
-            if (array[0] == true) {
-                amount = array[1]
+        checkBalance(senderAddress, amount, api).then(array1 => {
+            if (array1[0] == true) {
+                amount = array1[1]
+                console.log(amount)
 
                 //The third step is to create the JSON file used for the transaction
-                doPrepare().then(txJSON => {  
-        
+                doPrepare(amount, senderAddress, receiverAddress, api).then(array2 => {  
+                console.log(array2)
                 //The fourth step is to sign the JSON file with the secret key
+                txJSON = array2[0]
                 const response = api.sign(txJSON, privateKey)
                 txID = response.id
+                maxLedgerVersion = array2[1]
                 console.log("Identifying hash:", txID)
                 const txBlob = response.signedTransaction
                 console.log("Signed blob:", txBlob + '\n')
         
                 //The fifth step is to take the signed Blob and submit it too the ledger
-                doSubmit(txBlob).then(earliestLedgerVersion => {
+                doSubmit(txBlob, api).then(earliestLedgerVersion => {
         
                 //The transaction has been submitted. this method checks on each ledger update if the transaction.
                 //has been accepted. if it has the success is logged and the process is ended    
-                validation(earliestLedgerVersion, maxLedgerVersion)
+                validation(earliestLedgerVersion, maxLedgerVersion, txID, api, amount)
         
                 }).catch(console.error)
 
                 }).catch(console.error);
             } else {
                 //If the user does not have enough balance inform them and exit the function without performing the transaction.
-                end("transaction was higher than user balance")
+                end("transaction was higher than user balance", api, null)
             }    
 
         }).catch(console.error);
 
         }).catch(console.error); 
-   
+} 
     // function used to disconnect from the server and end the process
-    function end(transactionResult) {
+    function end(transactionResult, api, amount) {
+        //console.log(api)
+        console.log('HELLO')
         api.disconnect().then(() => {
             let successTag = 'SUCCESS';
             console.log('API has disconnected');
+            console.log(transactionResult)
             if (transactionResult.includes(successTag))
-            {
-                document.getElementById('TwitterButton').style.display = 'inline-block';
-                console.log(window.location.href)                
-                document.getElementById('TwitterButton').href="https://twitter.com/intent/tweet/?text=" + "I just donated " + amount  +" XRP to website " + window.location.href 
-                         + " using the DTS plugin. More info about the plugin is available at:"  +   "&amp;url=https://github.com/denizdanaie/A-Decentralized-Tipping-System/";  
-                document.getElementById('ValidationText').style="color:green"
-                document.getElementById('ValidationText').innerHTML = "The transaction was succesfully processed.  <br> You can share your donation on social media.";    
+            { 
+                document.getElementById('TwitterButton').style.display = 'inline-block';            
+                document.getElementById('TwitterButton').href = "https://twitter.com/intent/tweet/?text=" + "I just donated " + String(amount)  +" XRP to website " + String(window.location.href) 
+                                                        + " using the DTS plugin. More info about the plugin is available at:"  +   "&amp;url=https://github.com/denizdanaie/A-Decentralized-Tipping-System/";       
+                document.getElementById('ValidationText').style ="color:green"
+                document.getElementById('ValidationText').innerHTML = "The transaction was succesfully processed.  <br> You can share your donation on social media.";  
 
             } else if (transactionResult.includes("transaction was higher than user balance")) {
-                document.getElementById('ValidationText').style="color:red"
+                document.getElementById('ValidationText').style ="color:red"
                 document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
                                                                        "<br> You can try again if you want.";
             } else if (transactionResult.includes("The validation of the transaction took to long")) {
-                document.getElementById('ValidationText').style="color:red"
+                document.getElementById('ValidationText').style ="color:red"
                 document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> The validation process timed out" +
                                                                        "<br> You can try again if you want.";
             } else {
-                document.getElementById('ValidationText').style="color:red"
+                document.getElementById('ValidationText').style ="color:red"
                 document.getElementById('ValidationText').innerHTML = "Unfortunately The transaction was not succesfully processed. error code: " + transactionResult +
                                                                       "<br> You can try again if you want."   
             }
             
+            document.getElementById("amount").value = null;
             document.getElementById('donateButton').disabled = false;
             document.getElementById('donateButton').addEventListener('click', donateMoney);
             console.log('button should be reactivated.')
@@ -100,10 +110,11 @@ async function doTransaction(receiverAddress, amount) {
     }
     
     // Function used to check if the user has enough balance to make the tip transaction.
-    async function checkBalance(senderAddress, amount) {
+    async function checkBalance(senderAddress, amount, api) {
         // Account info is called because it contains the users balance.
         info = await api.getAccountInfo(senderAddress)
-        
+        console.log("INFO")
+        console.log(info)
         // Check to see if the user has enough balance
         if (Number(info.xrpBalance) >= Number(amount)) {
             // The user has enough balance the transaction can be executed.
@@ -124,33 +135,35 @@ async function doTransaction(receiverAddress, amount) {
     //new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
     //ledger version twice but that is not a big issue. It only stops calling itself if logtransaction returns true or 
     //after a certain number of ledgers has been validated.
-    async function validation(earliestLedgerVersion, maxLedgerVersion) {
+    async function validation(earliestLedgerVersion, maxLedgerVersion, txID, api, amount) {
         var x = false 
         var ledgerVersion = null
         api.getLedgerVersion().then(function(d){
             ledgerVersion = parseInt(d)
             console.log('Ledger = @ version ', ledgerVersion)
         })
-        x = await logTransaction(earliestLedgerVersion)
+        console.log(maxLedgerVersion)
+        console.log(earliestLedgerVersion)
+        x = await logTransaction(earliestLedgerVersion, txID, api, amount)
         if (ledgerVersion > maxLedgerVersion) {
             console.log("If the transaction hasn't succeeded by now, it's expired")
-            end("The validation of the transaction took to long")
+            end("The validation of the transaction took to long", api, amount)
             x = true 
         }
         if(x == false){
-            setTimeout(function(){ validation(earliestLedgerVersion,maxLedgerVersion); }, 2000);
+            setTimeout(function(){ validation(earliestLedgerVersion,maxLedgerVersion, txID, api, amount); }, 2000);
         }
     }
   
     //function used to check if the transaction has been succesfully put on the ledger. 
     //It can take a couple of ledger updates for this to happen so this function will throw errors.
     //and needs to be called multiple times. 
-    async function logTransaction(earliestLedgerVersion) {
+    async function logTransaction(earliestLedgerVersion,txID, api, amount) {
         try {
             tx = await api.getTransaction(txID, {minLedgerVersion: earliestLedgerVersion})
             console.log("Transaction result:", tx.outcome.result)
             console.log("Balance changes:", JSON.stringify(tx.outcome.balanceChanges) + '\n')
-            end(tx.outcome.result)  
+            end(tx.outcome.result, api, amount)  
             return true
         } catch(error) {
             console.log("Couldn't get transaction outcome:", error + '\n')
@@ -160,7 +173,7 @@ async function doTransaction(receiverAddress, amount) {
 
     //function used to create the transaction JSON file that needs to be submitted.
     //for a transaction to happen.
-    async function doPrepare() {
+    async function doPrepare(amount, senderAddress, receiverAddress, api) {
         const sender = senderAddress
         const preparedTx = await api.prepareTransaction({
         "TransactionType": "Payment",
@@ -176,11 +189,11 @@ async function doTransaction(receiverAddress, amount) {
         console.log("Prepared transaction instructions:", preparedTx.txJSON + '\n')
         console.log("Transaction cost:", preparedTx.instructions.fee, "XRP")
         console.log("Transaction expires after ledger:", maxLedgerVersion + '\n')
-        return preparedTx.txJSON
+        return [preparedTx.txJSON, maxLedgerVersion];
     }
 
     //the function used to submit the transaction to the ledger.
-    async function doSubmit(txBlob) {
+    async function doSubmit(txBlob, api) {
 
         const latestLedgerVersion = await api.getLedgerVersion()
     
@@ -197,7 +210,7 @@ async function doTransaction(receiverAddress, amount) {
         // validated ledger at time of submission.
         return latestLedgerVersion + 1
     }
-}
+
 
 // Function to get the credentials of the user
 async function getCredentials(filename) {
@@ -220,25 +233,25 @@ async function getCredentials(filename) {
 }
 
 
-function printXrpConnection() {
-    var api = new ripple.RippleAPI({server:'wss://s1.ripple.com/'});
-    api.connect().then(function() {
-        return api.getServerInfo();
-    }).then(function(server_info) {
-      document.body.innerHTML += "<p>Connected to rippled server!</p>" +
-      "      <table>" +
-      "        <tr><th>Version</th>" +
-      "          <td>" + server_info.buildVersion + "</td></tr>" +
-      "        <tr><th>Ledgers available</th>" +
-      "          <td>" + server_info.completeLedgers + "</td></tr>" +
-      "        <tr><th>hostID</th>" +
-      "          <td>" + server_info.hostID + "</td></tr>" +
-      "        <tr><th>Most Recent Validated Ledger Seq.</th>" +
-      "          <td>" + server_info.validatedLedger.ledgerVersion + "</td></tr>" +
-      "        <tr><th>Most Recent Validated Ledger Hash</th>" +
-      "          <td>" + server_info.validatedLedger.hash + "</td></tr>" +
-      "        <tr><th>Seconds since last ledger validated</th>" +
-      "          <td>" + server_info.validatedLedger.age + "</td></tr>" +
-      "      </table>";
-      });
-  }
+// function printXrpConnection() {
+//     var api = new ripple.RippleAPI({server:'wss://s1.ripple.com/'});
+//     api.connect().then(function() {
+//         return api.getServerInfo();
+//     }).then(function(server_info) {
+//       document.body.innerHTML += "<p>Connected to rippled server!</p>" +
+//       "      <table>" +
+//       "        <tr><th>Version</th>" +
+//       "          <td>" + server_info.buildVersion + "</td></tr>" +
+//       "        <tr><th>Ledgers available</th>" +
+//       "          <td>" + server_info.completeLedgers + "</td></tr>" +
+//       "        <tr><th>hostID</th>" +
+//       "          <td>" + server_info.hostID + "</td></tr>" +
+//       "        <tr><th>Most Recent Validated Ledger Seq.</th>" +
+//       "          <td>" + server_info.validatedLedger.ledgerVersion + "</td></tr>" +
+//       "        <tr><th>Most Recent Validated Ledger Hash</th>" +
+//       "          <td>" + server_info.validatedLedger.hash + "</td></tr>" +
+//       "        <tr><th>Seconds since last ledger validated</th>" +
+//       "          <td>" + server_info.validatedLedger.age + "</td></tr>" +
+//       "      </table>";
+//       });
+//   }
