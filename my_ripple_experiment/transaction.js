@@ -1,17 +1,18 @@
 
 async function doTransaction(receiverAddress, amount) {
+    console.time("doTransaction");
     senderAddress = await getCredentials('publicAddress.txt')
     privateKey = await getCredentials('privateKey.txt')
 
     console.log("Public address webpage " + receiverAddress)
     console.log("Public address user " + senderAddress)
-    console.log("Private key user " + privateKey)
+    // console.log("Private key user " + privateKey)
     console.log("tip amount " + amount)
     
     // For testing overwrite the arguments
-    receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
-    senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
-    privateKey = 'shtpSCSbCFfvyAZLuo7aYutvkkKeu'
+    // receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
+    // senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
+    // privateKey = 'shtpSCSbCFfvyAZLuo7aYutvkkKeu'
    
     api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
     var maxLedgerVersion = null
@@ -88,6 +89,8 @@ async function doTransaction(receiverAddress, amount) {
             document.getElementById('donateButton').disabled = false;
             document.getElementById('donateButton').addEventListener('click', donateMoney);
             console.log('button should be reactivated.')
+            console.timeEnd("doTransaction");
+
         })
     }
     
@@ -220,6 +223,7 @@ async function getCredentials(filename) {
 }
 
 
+/*
 function printXrpConnection() {
     var api = new ripple.RippleAPI({server:'wss://s1.ripple.com/'});
     api.connect().then(function() {
@@ -242,3 +246,4 @@ function printXrpConnection() {
       "      </table>";
       });
   }
+*/
