@@ -6,42 +6,53 @@ async function donateMoney() {
   var amountval = document.getElementById("amount").value;
   console.log("amount " + amountval)
   // First check if the amount of tip is a valid number(Integer, Float)
-  if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/)) || amountval == 0){
+  if(!(amountval.match(/^-{0,1}\d+$/) || amountval.match(/^\d+\.\d+$/)) || amountval <= 0){
     alert("Please insert a valid number.")
   } else {
     // Retrieve the currency selected by the user.
     var e = document.getElementById("ddlViewBy");
-    var strUser = e.value
-    console.log("DIT IS " +  strUser)
-    
+    var strUser = e.value    
     // Switch case user has either selected USD, EUR or XRP. and for each case the amount is converted
     // to XRP and a custom confirmation screen is shown for each selected currency.
-    console.log("TESTINPUT " + strUser)
+  
+    var confirmationMessage = ''
+    var newAmountVal = 0
     switch (String(strUser)) {
       case "EUR":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ")
-        var confirmation = confirm("Please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        confirmationMessage = "Please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
       case "USD":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpusd/' , 'USD ')
-        var confirmation = confirm("Please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        confirmationMessage = "Please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
       case "XRP":
         newAmountVal = amountval
-        console.log("The to be donated amount in XRP: " + newAmountVal)
-        var confirmation = confirm("Please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage())
+        confirmationMessage = "Please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
     }
-
+    var confirmation = false
+    if(checkMinAmount(newAmountVal)) {
+      confirmation = confirm(confirmationMessage)
+    } else {
+      alert("The selected amount is below the minimum of 0.000001 XRP")
+    }
     // Check if user really wants to tip x to the webpage
     if (confirmation) {
-      //printXrpConnection()
+      // printXrpConnection()
       document.getElementById("donateButton").disabled = true;
       // Start transaction
       document.getElementById('ValidationText').style="color:blue"
       document.getElementById('ValidationText').innerHTML = "The transaction is in progress...";
       doTransaction(getPublicAddressWebpage(), newAmountVal)
     }
+  }
+}
+function checkMinAmount(amount) {
+  if(amount >= 1e-6) { 
+    return true
+  } else {
+    return false
   }
 }
 
@@ -70,7 +81,7 @@ async function exchangeRate(amount, url, currency) {
         
   // Calculate and return the amount in XRP
   newRate = eRate * amount
-  newRate = newRate.toFixed(2)
+  newRate = newRate.toFixed(6)
   console.log("The to be donated amount in XRP: " + newRate)
 
   return newRate
@@ -133,8 +144,7 @@ async function showTipDiv() {
   } else {
     document.getElementById('ValidationTextUpload').innerHTML = "";
     // Check if files are uploaded
-    console.log(senderAddress)
-    console.log(privateKey)
+    
     if(senderAddress == 0 || privateKey == 0) {
       document.getElementById('ValidationTextUpload').innerHTML = "One of the files was not uploaded succesfully. Please try again.";
     }

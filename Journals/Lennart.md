@@ -45,4 +45,5 @@
 ## Week 8
 - Show total amount tipped to web page - 3 hours
 - Improve design section - 5 hours
-- Meeting and disucssing current work - 2 hours
+- Meeting and disucssing current work - 4 hours
+- Creating tests using Jasmine and Karma - 8 hours
