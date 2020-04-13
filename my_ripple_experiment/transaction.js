@@ -14,8 +14,8 @@ async function doTransaction(receiverAddress, amount) {
     
     // For testing overwrite the arguments
     // receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
-    // senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
-    // privateKey = 'shtpSCSbCFfvyAZLuo7aYutvkkKeu'
+    // senderAddress = 'rMJwmVnDT8TJjfFc4Puc64Z7ALiKUkKKqY'
+    // privateKey = 'snNSA3FU6TJwYiwLCv55iDHkn2PCm'
    
     //api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
     api = API('wss://s.altnet.rippletest.net:51233')
@@ -221,13 +221,16 @@ async function getCredentials(filename) {
     var path = browser.runtime.getURL("/keys/" + filename);
     const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
     const file = await tmpFiles.get(path);
+
     // Only open if its a mutable file.
     // Check if file exists
     if (typeof file !== 'undefined'){
         if(file.open) {
             const fh = file.open("readonly");
+            const metadata = await fh.getMetadata();
             // Return value
-            const value = await fh.readAsText(200);
+            const value = await fh.readAsText(metadata.size);           
+            await fh.close();
             return value
         }
     } else {
