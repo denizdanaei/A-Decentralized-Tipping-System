@@ -1,3 +1,5 @@
+// Constructor method that returns an api that is used to connect,
+// to the ripple server.
 function API(url) {
     return new ripple.RippleAPI({server: url})
 }
@@ -7,37 +9,27 @@ async function doTransaction(receiverAddress, amount) {
     senderAddress = await getCredentials('publicAddress.txt')
     privateKey = await getCredentials('privateKey.txt')
 
-    // console.log("Public address webpage " + receiverAddress)
-    // console.log("Public address user " + senderAddress)
-    // console.log("Private key user " + privateKey)
-    // console.log("tip amount " + amount)
-    
-    // For testing overwrite the arguments
-    // receiverAddress = 'raoeq8pivVwaJoA7medQrBFt6nb5SMLt18'
-    // senderAddress = 'rPipQJrNtByNFuybUJNQnPGqGfzvKsxx2e'
-    // privateKey = 'shtpSCSbCFfvyAZLuo7aYutvkkKeu'
-   
-    //api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
+    // Create the api to connect to the XRP server.
+    // Use wss://s.altnet.rippletest.net:51233 to connect to the test server.
+    // Use wss://s1.ripple.com to connect to the public ripple server.
     api = API('wss://s.altnet.rippletest.net:51233')
     var maxLedgerVersion = null
     var txID = null
 
-    //this is pretty much the main function for the transaction. 
-    //the first step is to connect to the API server
+    // this is pretty much the main function for the transaction. 
+    // the first step is to connect to the API server
     api.connect().then(() => {
         console.log('Connected to the API server' + '\n');
         
-        //The second step is to check if the user has enough balance on their account
-        //to make the tip.
+        // The second step is to check if the user has enough balance on their account
+        // to make the tip.
         checkBalance(senderAddress, amount, api).then(array1 => {
             if (array1[0] == true) {
                 amount = array1[1]
-                console.log(amount)
 
-                //The third step is to create the JSON file used for the transaction
+                // The third step is to create the JSON file used for the transaction
                 doPrepare(amount, senderAddress, receiverAddress, api).then(array2 => {  
-                console.log(array2)
-                //The fourth step is to sign the JSON file with the secret key
+                // The fourth step is to sign the JSON file with the secret key
                 txJSON = array2[0]
                 const response = api.sign(txJSON, privateKey)
                 txID = response.id
@@ -46,18 +38,18 @@ async function doTransaction(receiverAddress, amount) {
                 const txBlob = response.signedTransaction
                 console.log("Signed blob:", txBlob + '\n')
         
-                //The fifth step is to take the signed Blob and submit it too the ledger
+                // The fifth step is to take the signed JSON file (signed Blob) and submit it too the ledger
                 doSubmit(txBlob, api).then(earliestLedgerVersion => {
         
-                //The transaction has been submitted. this method checks on each ledger update if the transaction.
-                //has been accepted. if it has the success is logged and the process is ended    
+                // The transaction has been submitted. this method checks on each ledger update if the transaction.
+                // has been accepted. The ledger are checked for the transaction and if found the result is logged and the process is ended.    
                 validation(earliestLedgerVersion, maxLedgerVersion, txID, api, amount)
         
                 }).catch(console.error)
 
                 }).catch(console.error);
             } else {
-                //If the user does not have enough balance inform them and exit the function without performing the transaction.
+                // If the user does not have enough balance inform them and exit the function without performing the transaction.
                 end("transaction was higher than user balance", api, null)
             }    
 
@@ -67,12 +59,12 @@ async function doTransaction(receiverAddress, amount) {
 } 
     // function used to disconnect from the server and end the process
     function end(transactionResult, api, amount) {
-        //console.log(api)
-        console.log('HELLO')
         api.disconnect().then(() => {
             let successTag = 'SUCCESS';
             console.log('API has disconnected');
             console.log(transactionResult)
+            // In this if case the transaction was successful, update the Twitter button and show it to the user. 
+            // And show a message to the user that the transaction was succesful.
             if (transactionResult.includes(successTag))
             { 
                 document.getElementById('TwitterButton').style.display = 'inline-block';            
@@ -81,20 +73,27 @@ async function doTransaction(receiverAddress, amount) {
                 document.getElementById('ValidationText').style ="color:green"
                 document.getElementById('ValidationText').innerHTML = "The transaction was succesfully processed.  <br> You can share your donation on social media.";  
 
-            } else if (transactionResult.includes("transaction was higher than user balance")) {
+            } 
+            // Else if conditon for when the user does not have enough on their account. Show the user that the do not have suffiecent balance.
+            else if (transactionResult.includes("transaction was higher than user balance")) {
                 document.getElementById('ValidationText').style ="color:red"
                 document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> Your balance wasn't high enough." +
                                                                        "<br> You can try again if you want.";
-            } else if (transactionResult.includes("The validation of the transaction took to long")) {
+            } 
+            // Else if condition for when the validation process times out. Show the user that it took to long to validate their transaction.
+            else if (transactionResult.includes("The validation of the transaction took to long")) {
                 document.getElementById('ValidationText').style ="color:red"
                 document.getElementById('ValidationText').innerHTML = "Sorry but the transaction was cancelled. <br> The validation process timed out" +
                                                                        "<br> You can try again if you want.";
-            } else {
+            } 
+            // Else conditon for when the transaction validated but their was an error message. Show the user this error message.
+            else {
                 document.getElementById('ValidationText').style ="color:red"
                 document.getElementById('ValidationText').innerHTML = "Unfortunately The transaction was not succesfully processed. error code: " + transactionResult +
                                                                       "<br> You can try again if you want."   
             }
             
+            // No matter wheter the transaction succeeded or not the donation button should be reactivated so that the user can do another transaction.
             document.getElementById("amount").value = null;
             document.getElementById('donateButton').disabled = false;
             document.getElementById('donateButton').addEventListener('click', donateMoney);
@@ -116,8 +115,6 @@ async function doTransaction(receiverAddress, amount) {
     async function checkBalance(senderAddress, amount, api) {
         // Account info is called because it contains the users balance.
         info = await api.getAccountInfo(senderAddress)
-        console.log("INFO")
-        console.log(info)
         // Check to see if the user has enough balance
         if (Number(info.xrpBalance) >= Number(amount)) {
             // The user has enough balance the transaction can be executed.
@@ -135,9 +132,9 @@ async function doTransaction(receiverAddress, amount) {
         }
     }
 
-    //new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
-    //ledger version twice but that is not a big issue. It only stops calling itself if logtransaction returns true or 
-    //after a certain number of ledgers has been validated.
+    // new function that takes ledger versions. it calls itself every 2000 milliseconds so potentially it checks the same 
+    // ledger version twice but that is not a big issue. It only stops calling itself if logtransaction returns true or 
+    // after a certain number of ledgers has been validated.
     async function validation(earliestLedgerVersion, maxLedgerVersion, txID, api, amount) {
         var x = false 
         var ledgerVersion = null
@@ -158,9 +155,9 @@ async function doTransaction(receiverAddress, amount) {
         }
     }
   
-    //function used to check if the transaction has been succesfully put on the ledger. 
-    //It can take a couple of ledger updates for this to happen so this function will throw errors.
-    //and needs to be called multiple times. 
+    // function used to check if the transaction has been succesfully put on the ledger. 
+    // It can take a couple of ledger updates for this to happen so this function will throw errors.
+    // and needs to be called multiple times. 
     async function logTransaction(earliestLedgerVersion,txID, api, amount) {
         try {
             tx = await api.getTransaction(txID, {minLedgerVersion: earliestLedgerVersion})
@@ -174,8 +171,8 @@ async function doTransaction(receiverAddress, amount) {
         }
     }
 
-    //function used to create the transaction JSON file that needs to be submitted.
-    //for a transaction to happen.
+    // function used to create the transaction JSON file that needs to be submitted.
+    // for a transaction to happen.
     async function doPrepare(amount, senderAddress, receiverAddress, api) {
         const sender = senderAddress
         const preparedTx = await api.prepareTransaction({
@@ -195,16 +192,16 @@ async function doTransaction(receiverAddress, amount) {
         return [preparedTx.txJSON, maxLedgerVersion];
     }
 
-    //the function used to submit the transaction to the ledger.
+    // The function used to submit the transaction to the ledger.
     async function doSubmit(txBlob, api) {
 
         const latestLedgerVersion = await api.getLedgerVersion()
     
         const result = await api.submit(txBlob)
         
-        //log the tentative results. keep in mind that these are not final.
-        //this log could indicate a succesfull transaction that ultimately fails
-        //and vice versa.
+        // log the tentative results. keep in mind that these are not final.
+        // this log could indicate a succesfull transaction that ultimately fails
+        // and vice versa.
         console.log("Tentative result code:", result.resultCode)
         console.log("Tentative result message:", result.resultMessage + '\n')
     
@@ -221,40 +218,19 @@ async function getCredentials(filename) {
     var path = browser.runtime.getURL("/keys/" + filename);
     const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
     const file = await tmpFiles.get(path);
+
     // Only open if its a mutable file.
     // Check if file exists
     if (typeof file !== 'undefined'){
         if(file.open) {
             const fh = file.open("readonly");
+            const metadata = await fh.getMetadata();
             // Return value
-            const value = await fh.readAsText(200);
+            const value = await fh.readAsText(metadata.size);           
+            await fh.close();
             return value
         }
     } else {
         return 0
     }
 }
-
-
-// function printXrpConnection() {
-//     var api = new ripple.RippleAPI({server:'wss://s1.ripple.com/'});
-//     api.connect().then(function() {
-//         return api.getServerInfo();
-//     }).then(function(server_info) {
-//       document.body.innerHTML += "<p>Connected to rippled server!</p>" +
-//       "      <table>" +
-//       "        <tr><th>Version</th>" +
-//       "          <td>" + server_info.buildVersion + "</td></tr>" +
-//       "        <tr><th>Ledgers available</th>" +
-//       "          <td>" + server_info.completeLedgers + "</td></tr>" +
-//       "        <tr><th>hostID</th>" +
-//       "          <td>" + server_info.hostID + "</td></tr>" +
-//       "        <tr><th>Most Recent Validated Ledger Seq.</th>" +
-//       "          <td>" + server_info.validatedLedger.ledgerVersion + "</td></tr>" +
-//       "        <tr><th>Most Recent Validated Ledger Hash</th>" +
-//       "          <td>" + server_info.validatedLedger.hash + "</td></tr>" +
-//       "        <tr><th>Seconds since last ledger validated</th>" +
-//       "          <td>" + server_info.validatedLedger.age + "</td></tr>" +
-//       "      </table>";
-//       });
-//   }

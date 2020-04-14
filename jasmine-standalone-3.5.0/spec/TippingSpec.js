@@ -1,5 +1,5 @@
 
-
+// Test for the getAdress() method to test if it succesfully retrieves the websites public key. 
 describe("Tipping getAddress", function() {
 	
 	beforeEach(function () {
@@ -15,6 +15,9 @@ describe("Tipping getAddress", function() {
 		expect(getPublicAddressWebpage()).toEqual('r9arMLuj7JbqhppNAMxdJkYuJ3GBmheqqf');
 	});	
 });
+
+// Tests for the exchangeRate() method for Euro's. test if the correct url was used. if it returs a promise. For a correctly fetched JSON file.
+// and for when there is no JSON file fetced.
 describe('exchangeRate EUR', function() {
 	var exchangeRatePromise;
 	var promiseHelper;
@@ -28,7 +31,7 @@ describe('exchangeRate EUR', function() {
 		});
 		spyOn(window, 'fetch').and.returnValue(fetchPromise);
 	
-		// Get exchange rate
+	// Get exchange rate
 	exchangeRatePromise = exchangeRate(100, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ") ;
 	});
 
@@ -39,7 +42,8 @@ describe('exchangeRate EUR', function() {
 	it('returns a promise', function() {
 		expect(exchangeRatePromise).toEqual(jasmine.any(Promise));
 	});
-
+	
+	// Test for when the exchange rate url returns a correct JSON file.
 	describe('on successful fetch', function() {
 		beforeEach(function() {
 			var response = new Response(JSON.stringify({
@@ -55,7 +59,8 @@ describe('exchangeRate EUR', function() {
 			});
 		});
 	});
-
+	
+	// Test for when the exchange rate url does not succesfully return a JSON file.
 	describe('on unsuccessful fetch', function() {
 		var errorObj = { msg: 'Wow, this really failed!' };
 
@@ -72,6 +77,7 @@ describe('exchangeRate EUR', function() {
 	});
 });
 
+// Test for showCorrectDiv for when the user has not input their credentials yet.
 describe('showCorrectDiv Empty - ', function() {
 	var publicPromise;
 	var promiseHelper;
@@ -96,6 +102,7 @@ describe('showCorrectDiv Empty - ', function() {
 	});
 });
 
+// Test for showCorrectDiv for when the user has input their credentials.
 describe('showCorrectDiv Filled - ', function() {
 	beforeEach(function() {
 		// Spy on checking the users credentials
@@ -108,6 +115,7 @@ describe('showCorrectDiv Filled - ', function() {
 	});	
 });
 
+// Test for showTipDiv to see if the filled in user credentials are retrieved.
 describe('showTipDiv Filled ', function() {
 	beforeEach(function() {
 		// Spy on checking the users credentials
@@ -122,6 +130,7 @@ describe('showTipDiv Filled ', function() {
 	});
 });
 
+// Test for donateMoney for when there is no valid value has been entered. 
 describe('Donate Money - ', function() {
 	beforeEach(function() {
 		// Spy on checking the users credentials
@@ -139,6 +148,7 @@ describe('Donate Money - ', function() {
 	});
 });
 
+// Test for donateMoney for when the valid amount was filled in with Euros.
 describe('Donate Money - EUR ', function() {
 
 	beforeEach(function() {
@@ -169,6 +179,7 @@ describe('Donate Money - EUR ', function() {
     });
 });
 
+// Test for donateMoney for when the valid amount was filled in with USD.
 describe('Donate Money - USD ', function() {
 	beforeEach(function() {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
@@ -199,6 +210,7 @@ describe('Donate Money - USD ', function() {
 	});
 });
 
+// Test for donateMoney for when the valid amount was filled in with XRP.
 describe('Donate Money - XRP ', function() {
 	beforeEach(function() {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;

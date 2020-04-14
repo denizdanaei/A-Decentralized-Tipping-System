@@ -7,10 +7,10 @@ module.exports = function(config) {
       'tipping.js',
       'my_ripple_experiment/transaction.js',
       'jasmine-standalone-3.5.0/spec/*.js',
-      "my_ripple_experiment/underscore-min.js", 
-      "my_ripple_experiment/lodash.js",
-      'my_ripple_experiment/ripple-latest.js',
-      'my_ripple_experiment/jquery.js'
+      "my_ripple_experiment/libraries/underscore-min.js", 
+      "my_ripple_experiment/libraries/lodash.js",
+      'my_ripple_experiment/libraries/ripple-latest.js',
+      'my_ripple_experiment/libraries/jquery.js'
 
     ],
 

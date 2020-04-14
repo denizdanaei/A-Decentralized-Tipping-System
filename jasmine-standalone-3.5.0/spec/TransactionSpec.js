@@ -1,3 +1,4 @@
+// Test for when the api created is unable to connect to the ripple server.
 describe("do Transaction no connection to API", function() {
 	beforeEach(function() {
 		spyOn(window, 'getCredentials').and.returnValue('testdata');
@@ -23,6 +24,7 @@ describe("do Transaction no connection to API", function() {
 
 });
 
+// Test for when the user does not have enough balance to perform the transaction.
 describe("do Transaction not enough balance.", function() {
 	beforeEach(function() {
 		spyOn(window, 'getCredentials').and.returnValue('testdata');
@@ -50,6 +52,7 @@ describe("do Transaction not enough balance.", function() {
 
 });
 
+// Test for when the promise object returned by doPrepare rejects. 
 describe("do Transaction doPrepare promise rejects", function() {
 	beforeEach(function() {
 		spyOn(window, 'getCredentials').and.returnValue('testdata');
@@ -79,6 +82,7 @@ describe("do Transaction doPrepare promise rejects", function() {
 
 });
 
+// Test for when the promise object returned by doSubmit rejects. 
 describe("do Transaction doSubmit promise rejects", function() {
 	beforeEach(function() {
 		spyOn(window, 'getCredentials').and.returnValue('testdata');
@@ -123,6 +127,7 @@ describe("do Transaction doSubmit promise rejects", function() {
 
 });
 
+// Test for doTransaction for when the user does a succesful transaction.
 describe("do Transaction successful transaction", function() {
 	beforeEach(function() {
 		spyOn(window, 'getCredentials').and.returnValue('testdata');
@@ -167,6 +172,8 @@ describe("do Transaction successful transaction", function() {
 
 });
 
+// Tests for checkBalance() method one for when the user does have enough balance and one for when the 
+// user does not have enough balance.
 describe("Check balance", function() {
 	beforeEach(function() {
 		api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
@@ -194,7 +201,7 @@ describe("Check balance", function() {
 	
 });
 
-
+// Test doSubmit method.
 describe("do Submit", function() {
 	beforeEach(function() {
  		api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
@@ -210,11 +217,11 @@ describe("do Submit", function() {
 		blob = "test blob"
 		latestLedgerVersion = await doSubmit(blob, api);
 		expect(latestLedgerVersion).toEqual(6)
-		console.log('TEST HAS BEEN COMPLETED')
 	});
 	
 });
 
+// Test doPrepare method.
 describe("do prepare", function() {
 	beforeEach(function() {
  		api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
@@ -234,11 +241,12 @@ describe("do prepare", function() {
 		array = await doPrepare(2000, "senderAddress", "receiverAddress", api);
 		expect(array[0]).toEqual("txjson")
 		expect(array[1]).toEqual(5000)
-		console.log('TEST HAS BEEN COMPLETED DO PREPARE')
 	});
 	
 });
 
+// Tests for logTransaction function. one for when logTransaction is able to find the transaction ID in the ledger,
+// and one for when logTransaction is unable to find the transaction ID in the ledger.
 describe("log transaction", function() {
 	beforeEach(function() {
  		api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
@@ -256,7 +264,6 @@ describe("log transaction", function() {
 		Bool = await logTransaction(5, 'txid', api, 400);
 		expect(Bool).toEqual(true)
 		expect(window.end).toHaveBeenCalledTimes(1)
-		console.log("LOGT HAS BEEN DONE")
 	});
 
 	it("failed log transaction", async function() {
@@ -264,12 +271,13 @@ describe("log transaction", function() {
 		Bool = await logTransaction(5, 'txid', api, 400);
 		expect(Bool).toEqual(false)
 		expect(window.end).toHaveBeenCalledTimes(0)
-		console.log("LOGT FAILED HAS BEEN DONE")
 	});
 
 	
 });
 
+// Tests for validation method. First test is for a succesful validation. Second test is for when the validation method times out.
+// And the third test is for when the validation fails and the method recursively calls itself.
 describe("validation", function() {
 	beforeEach(function() {
  		api = new ripple.RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})
@@ -283,7 +291,6 @@ describe("validation", function() {
 		await validation(0, 50, 'txid', api, 400);
 		expect(window.end).toHaveBeenCalledTimes(0)
 		expect(setTimeout).toHaveBeenCalledTimes(0)
-		console.log("VALIDATION HAS BEEN DONE")
 	});
 
 	it("timed out validation", async function() {
@@ -291,7 +298,6 @@ describe("validation", function() {
 		await validation(0, 0, 'txid', api, 400);
 		expect(window.end).toHaveBeenCalledTimes(1)
 		expect(setTimeout).toHaveBeenCalledTimes(0)
-		console.log("VALIDATION HAS BEEN DONE")
 	});
 
 	it("validation recursively calls itself", async function() {
@@ -299,21 +305,21 @@ describe("validation", function() {
 		await validation(0, 50, 'txid', api, 400);
 		expect(window.end).toHaveBeenCalledTimes(0)
 		expect(setTimeout).toHaveBeenCalledTimes(1)
-		console.log("VALIDATION HAS CALLED ITSELF")
 	});
 	
 });
 
+// Test for the sleep method.
 describe("sleep", function() {
 
     it("successful sleep", async function() {
 		pr = sleep(50)
-		console.log(pr)
 		expect(pr).toBeInstanceOf(Promise)
 	});
 	
 });
 
+// Test for the end function. One test for each if else condition in that function.
 describe("end", function() {
 	
 	beforeEach(function() {
@@ -369,6 +375,7 @@ describe("end", function() {
 
 });
 
+// Test for the API constructor.
 describe("API", function() {
 
 	it("successful API made", function() {
