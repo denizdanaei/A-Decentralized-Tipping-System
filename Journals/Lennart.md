@@ -47,3 +47,11 @@
 - Improve design section - 5 hours
 - Meeting and disucssing current work - 4 hours
 - Creating tests using Jasmine and Karma - 8 hours
+
+## Week 9
+- Bugfix storage uploading(new version Firefox) - 5 hours 
+- Working on the report - 8 hours
+
+## Week 10
+- Finishing the report - 8 hours
+- Creating the presentation - 4 hours 
