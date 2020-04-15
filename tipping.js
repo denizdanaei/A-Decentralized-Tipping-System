@@ -1,5 +1,10 @@
+// When DTS is running the first thing done for each website is calling.
+// the function askForTipping().
 askForTipping()
 
+// Function called when the user wants to donate an amount. The amount gets checked for validity.
+// and a confirmation message is created and shown to the user. If the user accepts the actual transaction is
+// started by calling doTransaction().
 async function donateMoney() {
   document.getElementById('ValidationText').innerHTML = "";
   document.getElementById('TwitterButton').style.display = 'none';
@@ -18,14 +23,17 @@ async function donateMoney() {
     var confirmationMessage = ''
     var newAmountVal = 0
     switch (String(strUser)) {
+      // Case for if the user filled in their amount in Euros. convert the amount to XRP and create a confirmation message.
       case "EUR":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpeur/', "EUR ")
         confirmationMessage = "Please confirm that you want to tip " + amountval + " EUR?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
+      // Case for if the user filled in their amount in USD. convert the amount to XRP and create a confirmation message.  
       case "USD":
         newAmountVal = await exchangeRate(amountval, 'https://www.bitstamp.net/api/v2/ticker/xrpusd/' , 'USD ')
         confirmationMessage = "Please confirm that you want to tip " + amountval + " USD?" + " This will be done by tipping " + newAmountVal + " in XRP." + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
         break;
+      // Case for if the user filled in their amount in XRP. no conversion is needed so only the confirmation message is created.  
       case "XRP":
         newAmountVal = amountval
         confirmationMessage = "Please confirm that you want to tip " + newAmountVal + " XRP?" + "\n \nThe tip will be send to: " + getPublicAddressWebpage();
@@ -48,6 +56,9 @@ async function donateMoney() {
     }
   }
 }
+
+// Function used to check if the amount filled in by the user is large enough for 
+// a succesful transaction. (no negative amounts are allowed for example).
 function checkMinAmount(amount) {
   if(amount >= 1e-6) { 
     return true
@@ -101,6 +112,8 @@ async function showCorrectDiv(){
   }
 }
 
+// First function called when the DTS is running. It checks the website allows for transactions.
+// If the website does show the html banner.
 function askForTipping(){
     const metas = document.getElementsByTagName('meta');
     for (let i = 0; i < metas.length; i++) {
@@ -176,6 +189,8 @@ function readAllFiles(evt) {
   }
 }
 
+// Function used by readAllFiles() to store the user credentials in new files.
+// that will be accessed by the browser when needed.
 async function insertDataStorage(filename, value) {
   filename = filename + ".txt"
   const tmpFiles = await IDBFiles.getFileStorage({name: "tmpFiles"});
