@@ -68,9 +68,9 @@
 
 ## Week 10
 
-- Improved the implementation section based on new methods and feedback.
+- Improved the implementation section based on new methods and feedback. - 3 hours
 - Cleaned up the code. removed code no longer necessary. moved libraries to its own folder and added comments where needed - 3 hours
-- Wrote the conclusion section. 
-- Worked on the final presentation.
-- Proof read the report for errors and improvements.
+- Wrote the conclusion section. - 1 hour
+- Worked on the final presentation. - 2 hours
+- Proof read the report for errors and improvements. - 3 hours
 
